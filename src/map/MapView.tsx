@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import L from 'leaflet'
-import { MapContainer, Marker, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet'
+import { AttributionControl, MapContainer, Marker, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet'
 import { Crosshair } from 'lucide-react'
 import { CASABLANCA_BOUNDS, CASABLANCA_CENTER } from '../data/districts'
 import type { LatLng } from '../data/types'
@@ -91,9 +91,10 @@ export function MapView({
           maxBounds={CASABLANCA_BOUNDS}
           maxBoundsViscosity={0.8}
           scrollWheelZoom={false}
-          attributionControl
+          attributionControl={false}
           className="h-full w-full"
         >
+          <AttributionControl prefix={false} />
           <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} />
           <MapRef onReady={onReady} />
           <FlyTo focus={focus} zoom={zoom} />
