@@ -1,0 +1,17 @@
+export const offices = {
+  title: 'Guichets et horaires',
+  lead: 'Sept guichets de proximité vous accueillent dans la ville. Sélectionnez-en un sur la carte ou dans la liste.',
+  filterLabel: 'Service recherché',
+  filterAll: 'Tous les services',
+  listTitle: '{count} guichets',
+  listTitleOne: '1 guichet',
+  empty: 'Aucun guichet ne propose ce service.',
+  address: 'Adresse',
+  phone: 'Téléphone',
+  hours: 'Horaires',
+  services: 'Services',
+  openNow: 'Ouvert en ce moment',
+  closedNow: 'Fermé en ce moment',
+  book: 'Prendre rendez-vous ici',
+  showOnMap: 'Voir sur la carte',
+}

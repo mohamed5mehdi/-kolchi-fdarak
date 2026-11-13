@@ -1,0 +1,21 @@
+export const home = {
+  title: 'Un problème dans votre quartier ?',
+  lead: 'Signalez-le en deux minutes, recevez un numéro de dossier et suivez son traitement jusqu’à la résolution.',
+  ctaReport: 'Signaler un problème',
+  trackTitle: 'Suivre un dossier',
+  trackLabel: 'Numéro de référence',
+  trackHint: 'Il figure sur votre accusé de réception, par exemple KF-2026-004817.',
+  quickTitle: 'Autres démarches',
+  quick: {
+    services: 'Trouver une démarche',
+    servicesDesc: 'Actes d’état civil, certificats, urbanisme.',
+    booking: 'Prendre rendez-vous',
+    bookingDesc: 'Choisissez un guichet et un créneau.',
+    guide: 'Je ne sais pas par où commencer',
+    guideDesc: 'Trois questions pour trouver la bonne démarche.',
+    offices: 'Guichets et horaires',
+    officesDesc: 'Adresses, horaires et services de chaque guichet.',
+  },
+  recentTitle: 'Derniers signalements à Casablanca',
+  recentEmpty: 'Aucun signalement récent.',
+}
