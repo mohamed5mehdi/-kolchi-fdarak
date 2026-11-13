@@ -1,4 +1,43 @@
 export const tracking = {
   title: 'Suivre un dossier',
   lead: 'Saisissez la référence reçue lors de votre signalement ou de votre rendez-vous.',
+  form: {
+    label: 'Référence du dossier',
+    hint: 'Exemple : KF-2026-004817 pour un signalement, RDV-2026-000213 pour un rendez-vous.',
+    error: 'Cette saisie ne correspond pas à une référence. Elle commence par KF ou RDV, suivi de l’année et d’un numéro.',
+  },
+  report: {
+    heading: 'Signalement {ref}',
+    status: 'Statut',
+    category: 'Catégorie',
+    district: 'Arrondissement',
+    street: 'Rue ou repère',
+    createdAt: 'Déposé le',
+    description: 'Description',
+    historyTitle: 'Historique',
+    upcoming: 'À venir',
+    mapLabel: 'Carte : emplacement signalé',
+    byDevice: 'Déposé depuis cet appareil par {name} · CIN {cin}',
+  },
+  appointment: {
+    heading: 'Rendez-vous {ref}',
+    procedure: 'Démarche',
+    office: 'Guichet',
+    date: 'Date',
+    slot: 'Heure',
+    bring: 'Présentez-vous 10 minutes avant l’heure avec votre CIN et les pièces demandées.',
+  },
+  notFound: {
+    title: 'Aucun dossier ne correspond à {ref}',
+    check: 'Vérifiez la saisie : une référence de signalement a la forme KF-2026-004817, une référence de rendez-vous la forme RDV-2026-000213.',
+    delay: 'Un signalement déposé à un guichet peut mettre jusqu’à 24 heures à apparaître ici.',
+  },
+  device: {
+    title: 'Sur cet appareil',
+    lead: 'Signalements et rendez-vous enregistrés dans ce navigateur.',
+    reports: 'Mes signalements',
+    appointments: 'Mes rendez-vous',
+    slotAt: '{date} à {slot}',
+    empty: 'Aucun dossier enregistré sur cet appareil. Les signalements et rendez-vous que vous déposez ici apparaîtront dans cette liste.',
+  },
 }

@@ -5,7 +5,7 @@ export const offices: Dict['offices'] = {
   lead: 'سبعة شبابيك للقرب تستقبلكم في المدينة. اختر واحدا على الخريطة أو في القائمة.',
   filterLabel: 'الخدمة المطلوبة',
   filterAll: 'جميع الخدمات',
-  listTitle: '{count} شبابيك',
+  listTitle: 'عدد الشبابيك: {count}',
   listTitleOne: 'شباك واحد',
   empty: 'لا يوجد شباك يقدم هذه الخدمة.',
   address: 'العنوان',
