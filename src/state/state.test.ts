@@ -1,12 +1,20 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
-import { bookAppointment, findAppointment, isSlotTaken, type NewAppointment } from './appointments'
-import { allReports, findReport, myReports, submitReport, type NewReport } from './reports'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  allAppointments,
+  bookAppointment,
+  findAppointment,
+  isSlotTaken,
+  resetAppointments,
+  type NewAppointment,
+} from './appointments'
+import { RETENTION_DAYS, allReports, findReport, myReports, resetReports, submitReport, type NewReport } from './reports'
 import { StoreError, readJson } from '../lib/storage'
 import { isRef } from '../lib/reference'
 
 const contact = { fullName: '  Salma Bennani ', cin: 'be 899 512', phone: '06 12 34 56 78' }
 /** Samedi 14 novembre 2026, 11 h à Casablanca (UTC+1). */
 const NOW = new Date('2026-11-14T10:00:00Z')
+const DAY = 24 * 60 * 60 * 1000
 
 const report: NewReport = {
   category: 'lighting',
@@ -39,7 +47,31 @@ function writeFromOtherTab(key: string, value: unknown) {
   localStorage.setItem(`kolchi-fdarak:${key}`, JSON.stringify(value))
 }
 
-afterEach(() => vi.restoreAllMocks())
+/** Simule l'événement storage reçu quand un autre onglet modifie la clé : l'onglet relit le stockage. */
+function storageEvent(key: string) {
+  window.dispatchEvent(new StorageEvent('storage', { key: `kolchi-fdarak:${key}` }))
+}
+
+const raw = (key: string) => localStorage.getItem(`kolchi-fdarak:${key}`)
+
+/** Aucune trace du nom, de la CIN (même masquée ou partielle) ni du téléphone. */
+function expectNoIdentity(stored: string | null) {
+  expect(stored).not.toBeNull()
+  for (const fragment of ['contact', 'Salma', 'Bennani', 'BE899', '899512', 'BE*', '****', '0612345678', '612345678', '06 12'])
+    expect(stored).not.toContain(fragment)
+}
+
+// L'horloge est figée au samedi 14 novembre 2026 : les relectures (événement storage) appliquent
+// la durée de conservation à cette date, quel que soit le jour où les tests tournent.
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(NOW)
+})
+
+afterEach(() => {
+  vi.useRealTimers()
+  vi.restoreAllMocks()
+})
 
 describe('signalements', () => {
   it('contient les dossiers existants consultables par référence', () => {
@@ -47,16 +79,68 @@ describe('signalements', () => {
     expect(allReports().length).toBeGreaterThanOrEqual(5)
   })
 
-  it('enregistre un signalement normalisé, avec la CIN conservée uniquement masquée', () => {
+  it('enregistre un signalement normalisé, sans aucune donnée d’identité', () => {
     const r = submitReport(report, NOW)
     expect(isRef(r.ref)).toBe(true)
     expect(r.status).toBe('received')
     expect(r.history).toHaveLength(1)
     expect(r.street).toBe('Rue Ibnou Mounir')
-    expect(r.contact).toEqual({ fullName: 'Salma Bennani', cin: 'BE****12', phone: '0612345678' })
+    expect(r).not.toHaveProperty('contact')
     expect(findReport(r.ref)).toEqual(r)
     expect(myReports()[0].ref).toBe(r.ref)
-    expect(JSON.stringify(readJson('reports', []))).not.toContain('899512')
+    expectNoIdentity(raw('reports'))
+  })
+
+  it(`efface un signalement ${RETENTION_DAYS} jours après sa création et réécrit la clé`, () => {
+    const r = submitReport(report, NOW)
+    vi.setSystemTime(new Date(NOW.getTime() + 29 * DAY))
+    storageEvent('reports')
+    expect(findReport(r.ref)).toBeDefined()
+
+    vi.setSystemTime(new Date(NOW.getTime() + 31 * DAY))
+    storageEvent('reports')
+    expect(findReport(r.ref)).toBeUndefined()
+    expect(myReports()).toEqual([])
+    expect(readJson('reports', null)).toEqual([])
+  })
+
+  it('purge aussi au moment d’enregistrer, avec la date injectée', () => {
+    const old = submitReport(report, NOW)
+    const later = submitReport(report, new Date(NOW.getTime() + 31 * DAY))
+    expect(readJson<{ ref: string }[]>('reports', []).map((r) => r.ref)).toEqual([later.ref])
+    expect(findReport(old.ref)).toBeUndefined()
+  })
+
+  it('migre une ancienne entrée : la propriété contact est retirée du stockage', () => {
+    const r = submitReport(report, NOW)
+    writeFromOtherTab('reports', [{ ...r, contact: { fullName: 'Salma Bennani', cin: 'BE****12', phone: '0612345678' } }])
+    storageEvent('reports')
+    expect(myReports()[0]).toEqual(r)
+    expectNoIdentity(raw('reports'))
+  })
+
+  it("ne réécrit pas la clé quand rien n'a changé (pas de boucle d'événements entre onglets)", () => {
+    submitReport(report, NOW)
+    const setItem = vi.spyOn(Storage.prototype, 'setItem')
+    storageEvent('reports')
+    expect(setItem).not.toHaveBeenCalled()
+  })
+
+  it('efface les dossiers et vérifie la suppression', () => {
+    submitReport(report, NOW)
+    expect(resetReports()).toBe(true)
+    expect(raw('reports')).toBeNull()
+    expect(myReports()).toEqual([])
+  })
+
+  it("signale un effacement impossible au lieu d'annoncer un succès", () => {
+    const r = submitReport(report, NOW)
+    vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+      throw new DOMException('bloqué', 'SecurityError')
+    })
+    expect(resetReports()).toBe(false)
+    // Rien n'a été supprimé : le dossier reste affiché.
+    expect(findReport(r.ref)).toBeDefined()
   })
 
   it.each<[string, Partial<NewReport>]>([
@@ -109,12 +193,48 @@ describe('signalements', () => {
 })
 
 describe('rendez-vous', () => {
-  it('réserve un créneau, masque la CIN et rend le créneau indisponible', () => {
+  it('réserve un créneau sans conserver d’identité et rend le créneau indisponible', () => {
     const a = bookAppointment(booking, NOW)
     expect(a.ref).toMatch(/^RDV-\d{4}-\d{6}$/)
-    expect(findAppointment(a.ref)?.contact.cin).toBe('BE****12')
+    expect(findAppointment(a.ref)).toEqual(a)
+    expect(a).not.toHaveProperty('contact')
+    expectNoIdentity(raw('appointments'))
     expect(isSlotTaken('maarif', '2026-11-17', '09:00')).toBe(true)
     expect(isSlotTaken('maarif', '2026-11-17', '09:30')).toBe(false)
+  })
+
+  it('purge un rendez-vous de la veille (heure de Casablanca) et garde celui du jour', () => {
+    const entry = { ref: 'RDV-2026-000001', officeId: 'maarif', procedureId: 'birth-certificate', slot: '11:30', createdAt: '2026-11-10T10:00:00.000Z' }
+    writeFromOtherTab('appointments', [
+      { ...entry, date: '2026-11-13' },
+      { ...entry, ref: 'RDV-2026-000002', date: '2026-11-14' },
+    ])
+    storageEvent('appointments')
+    expect(allAppointments().map((a) => a.ref)).toEqual(['RDV-2026-000002'])
+    expect(readJson<{ ref: string }[]>('appointments', []).map((a) => a.ref)).toEqual(['RDV-2026-000002'])
+  })
+
+  it(`purge un rendez-vous créé il y a plus de ${RETENTION_DAYS} jours`, () => {
+    const entry = { ref: 'RDV-2026-000001', officeId: 'maarif', procedureId: 'birth-certificate', date: '2026-12-20', slot: '09:00' }
+    writeFromOtherTab('appointments', [{ ...entry, createdAt: new Date(NOW.getTime() - 31 * DAY).toISOString() }])
+    storageEvent('appointments')
+    expect(findAppointment('RDV-2026-000001')).toBeUndefined()
+    expect(readJson('appointments', null)).toEqual([])
+  })
+
+  it('migre un ancien rendez-vous : la propriété contact est retirée du stockage', () => {
+    const a = bookAppointment(booking, NOW)
+    writeFromOtherTab('appointments', [{ ...a, contact: { fullName: 'Salma Bennani', cin: 'BE****12', phone: '0612345678' } }])
+    storageEvent('appointments')
+    expect(findAppointment(a.ref)).toEqual(a)
+    expectNoIdentity(raw('appointments'))
+  })
+
+  it('efface les rendez-vous et vérifie la suppression', () => {
+    bookAppointment(booking, NOW)
+    expect(resetAppointments()).toBe(true)
+    expect(raw('appointments')).toBeNull()
+    expect(isSlotTaken('maarif', '2026-11-17', '09:00')).toBe(false)
   })
 
   it('refuse un créneau déjà pris dans cet onglet', () => {

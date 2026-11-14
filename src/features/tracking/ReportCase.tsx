@@ -2,18 +2,24 @@ import { Smartphone } from 'lucide-react'
 import { districtName, getDistrict } from '../../data/districts'
 import type { Report } from '../../data/types'
 import { fmt, useI18n } from '../../i18n/I18nProvider'
+import { expiresAt } from '../../lib/storage'
 import { MapView } from '../../map/MapView'
+import { myReports } from '../../state/reports'
+import { Alert } from '../../ui/Alert'
 import { StatusBadge } from '../../ui/StatusBadge'
-import { maskCin, shortName, upcomingSteps } from './format'
+import { upcomingSteps } from './format'
 import { RefHeading } from './RefHeading'
 
 export function ReportCase({ report }: { report: Report }) {
   const { t, rtl, date } = useI18n()
   const units = t.common.units
-  const upcoming = upcomingSteps(report.history)
+  // Un dossier de cet appareil n'est transmis à aucun service : son statut n'évoluera pas.
+  const mine = myReports().some((r) => r.ref === report.ref)
+  const upcoming = mine ? [] : upcomingSteps(report.history)
 
   return (
     <article aria-labelledby="case-title" className="space-y-6">
+      {!mine && <Alert>{t.tracking.report.sample}</Alert>}
       <div className="rounded-md border border-line bg-white p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <h2 id="case-title" className="text-2xl font-bold text-ink">
@@ -37,13 +43,10 @@ export function ReportCase({ report }: { report: Report }) {
           <dt className="text-sm font-semibold text-ink-soft">{t.tracking.report.description}</dt>
           <dd className="whitespace-pre-line text-ink">{report.description}</dd>
         </dl>
-        {report.contact && (
+        {mine && (
           <p className="mt-4 flex items-center gap-2 border-t border-line pt-4 text-sm text-ink-soft">
             <Smartphone className="size-4 shrink-0" aria-hidden="true" />
-            {fmt(t.tracking.report.byDevice, {
-              name: shortName(report.contact.fullName),
-              cin: maskCin(report.contact.cin),
-            })}
+            {fmt(t.tracking.report.byDevice, { date: date(expiresAt(report.createdAt).toISOString()) })}
           </p>
         )}
       </div>
@@ -78,6 +81,7 @@ export function ReportCase({ report }: { report: Report }) {
               </li>
             ))}
           </ol>
+          {mine && <p className="text-ink-soft">{t.tracking.report.frozen}</p>}
         </section>
         <MapView
           label={t.tracking.report.mapLabel}

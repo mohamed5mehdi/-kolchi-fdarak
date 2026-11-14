@@ -34,7 +34,7 @@ export const booking: Dict['booking'] = {
   },
   contact: {
     title: 'Your contact details',
-    sample: 'The fields are filled in with a sample identity. Replace it with your own.',
+    sample: 'The fields are filled in with a sample identity. Keep it: nothing is sent, so do not enter your real details.',
   },
   review: {
     title: 'Check your appointment',
@@ -42,15 +42,15 @@ export const booking: Dict['booking'] = {
     office: 'Office',
     when: 'Date and time',
     contact: 'Contact details',
-    confirm: 'Confirm the appointment',
+    confirm: 'Save the appointment',
   },
   when: '{date} at {slot}',
   done: {
-    title: 'Appointment confirmed',
+    title: 'Appointment saved on this device',
     refLabel: 'Appointment reference',
     refHint: 'Keep this reference: you will need it to find your appointment.',
-    bring: 'Documents to bring',
-    arrive: 'Please arrive 10 minutes before your appointment.',
+    bring: 'Documents usually requested (example)',
+    arrive: 'This appointment only exists in this browser: no office is informed of it. For a real procedure, contact the relevant administration directly.',
     track: 'Track this appointment',
   },
 }

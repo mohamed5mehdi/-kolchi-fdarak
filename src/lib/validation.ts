@@ -12,18 +12,12 @@ export function isValidCin(value: string): boolean {
   return /^[A-Z]{1,2}\d{4,6}$/.test(normalizeCin(value))
 }
 
-/** BE899512 → BE****12. Idempotent : une CIN déjà masquée reste identique. */
-export function maskCin(cin: string): string {
-  if (cin.length <= 4) return '*'.repeat(cin.length)
-  return `${cin.slice(0, 2)}${'*'.repeat(cin.length - 4)}${cin.slice(-2)}`
-}
-
 /** Téléphone marocain : 0 ou +212 suivi de 9 chiffres. */
 export function normalizePhone(value: string): string {
   return compact(value).replace(/^\+212|^00212/, '0')
 }
 
-/** Mobile uniquement (06 ou 07) : le suivi est envoyé par SMS, un fixe en 05 ne peut pas le recevoir. */
+/** Format de mobile marocain : 06 ou 07 suivi de 8 chiffres (les fixes en 05 sont refusés). */
 export function isValidPhone(value: string): boolean {
   return /^0[67]\d{8}$/.test(normalizePhone(value))
 }

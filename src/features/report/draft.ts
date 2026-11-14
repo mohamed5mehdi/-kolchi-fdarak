@@ -10,15 +10,6 @@ export type Step = 1 | 2 | 3 | 4
 // Les seuils viennent de la couche de données : l'interface et l'enregistrement appliquent la même règle.
 export { DESCRIPTION_MAX, DESCRIPTION_MIN, REPORT_CATEGORIES as CATEGORIES } from '../../state/reports'
 
-/** Service municipal qui reçoit chaque catégorie (clé de common.units). */
-export const UNIT_BY_CATEGORY: Record<ReportCategory, keyof Dict['common']['units']> = {
-  road: 'roads',
-  lighting: 'lighting',
-  cleanliness: 'cleanliness',
-  green: 'green',
-  water: 'water',
-}
-
 export interface Draft {
   category: ReportCategory | null
   district: DistrictId | ''

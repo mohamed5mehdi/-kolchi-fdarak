@@ -16,7 +16,10 @@ export const about: Dict['about'] = {
   techTitle: 'Linjaz',
   tech: 'React, TypeScript, Vite, Tailwind CSS, Leaflet w OpenStreetMap. Tests b Vitest, Testing Library w axe-core.',
   privacyTitle: 'Lma3loumat dyalek',
-  privacy: 'Ta ma3louma ma katkhrej mn appareil dyalek. T9der tms7 kolchi f ay wa9t.',
+  privacy: 'Tablighat w lmawa3id kaytsejjlou ghir f had navigateur. Kaytms7ou bou7dhom mn ba3d 30 youm; lmaw3id kaytms7 7ta howa mlli ydouz nharo. Smiya, CIN w ttelephone li katkteb f lformulairat 3emmrhom ma kayt7efdou; ghir lougha li khtariti li kat7fed. Lkharita kattjeb mn OpenStreetMap, li kaychouf adresse IP dyalek w lblasa li baynin. T9der tms7 kolchi f ay wa9t.',
   clear: 'Ms7 dossiers w lmawa3id dyali',
+  confirmClear: 'Akked lms7',
+  confirmPrompt: 'Dossiers w lmawa3id li msejjlin f had navigateur ghadi ytms7ou w ma ghadi trja3 ch.',
   cleared: 'Dossiers w lmawa3id dyalek tms7ou mn had navigateur.',
+  clearFailed: 'Ma 9derna ch nt2akdou mn lms7: lstockage dyal had navigateur msdoud. Ms7 data dyal site mn les réglages dyal navigateur.',
 }

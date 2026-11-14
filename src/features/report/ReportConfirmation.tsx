@@ -2,10 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { CircleCheck, Copy, Search } from 'lucide-react'
 import type { Report } from '../../data/types'
 import { fmt, useI18n } from '../../i18n/I18nProvider'
-import { formatPhone } from '../../lib/validation'
 import { Alert } from '../../ui/Alert'
 import { Button, ButtonLink } from '../../ui/Button'
-import { UNIT_BY_CATEGORY } from './draft'
 
 export function ReportConfirmation({ report, onRestart }: { report: Report; onRestart: () => void }) {
   const { t } = useI18n()
@@ -25,11 +23,7 @@ export function ReportConfirmation({ report, onRestart }: { report: Report; onRe
     }
   }
 
-  const steps = [
-    fmt(t.report.done.next1, { unit: t.common.units[UNIT_BY_CATEGORY[report.category]] }),
-    fmt(t.report.done.next2, { phone: formatPhone(report.contact?.phone ?? '') }),
-    fmt(t.report.done.next3, { ref: report.ref }),
-  ]
+  const steps = [t.report.done.next1, t.report.done.next2, fmt(t.report.done.next3, { ref: report.ref })]
 
   return (
     <div className="space-y-8">

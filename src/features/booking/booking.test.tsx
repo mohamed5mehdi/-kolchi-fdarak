@@ -4,6 +4,8 @@ import { renderApp } from '../../test/renderApp'
 import { axeViolations } from '../../test/axe'
 import { findAppointment } from '../../state/appointments'
 
+const CONFIRM = 'Enregistrer le rendez-vous'
+
 const PREFILLED = '/rendez-vous?demarche=birth-certificate&guichet=maarif'
 const next = () => screen.getByRole('button', { name: 'Continuer' })
 
@@ -40,19 +42,24 @@ describe('prise de rendez-vous', () => {
     expect(screen.getByLabelText(/Nom et prénom/)).toHaveValue('Salma Bennani')
     expect(screen.getByLabelText(/Numéro de CIN/)).toHaveValue('BE899512')
     expect(screen.getByLabelText(/Téléphone mobile/)).toHaveValue('06 12 34 56 78')
+    expect(screen.getByText(/Gardez-la : rien n’est transmis/)).toBeInTheDocument()
     await user.click(next())
 
     expect(screen.getByRole('heading', { level: 2, name: 'Vérifiez votre rendez-vous' })).toHaveFocus()
     expect(screen.getByText('samedi 14 novembre 2026 à 10:30')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Confirmer le rendez-vous' }))
+    await user.click(screen.getByRole('button', { name: CONFIRM }))
 
-    expect(screen.getByRole('heading', { level: 2, name: 'Rendez-vous confirmé' })).toHaveFocus()
+    expect(screen.getByRole('heading', { level: 2, name: 'Rendez-vous enregistré sur cet appareil' })).toHaveFocus()
     const ref = container.querySelector('p.ref')!.textContent!
     expect(ref).toMatch(/^RDV-2026-\d{6}$/)
     expect(findAppointment(ref)).toMatchObject({ officeId: 'maarif', date: '2026-11-14', slot: '10:30' })
     expect(screen.getByText(/27, rue Ibnou Mounir/)).toBeInTheDocument()
+    expect(screen.getByText('Pièces généralement demandées (exemple)')).toBeInTheDocument()
     expect(screen.getByText('Numéro et année de l’acte (figurent sur le livret de famille)')).toBeInTheDocument()
-    expect(screen.getByText(/Présentez-vous 10 minutes avant/)).toBeInTheDocument()
+    expect(screen.getByText(/aucun guichet n’en est informé/)).toBeInTheDocument()
+    // Rien de l'identité saisie n'est conservé dans le navigateur.
+    const stored = localStorage.getItem('kolchi-fdarak:appointments')!
+    for (const fragment of ['contact', 'Bennani', 'BE899', '899512', 'BE*', '0612345678']) expect(stored).not.toContain(fragment)
     expect(screen.getByRole('link', { name: 'Suivre ce rendez-vous' })).toHaveAttribute('href', `/suivi/${ref}`)
     expect(screen.getByRole('link', { name: "Retour à l'accueil" })).toHaveAttribute('href', '/')
   })
@@ -78,9 +85,9 @@ describe('prise de rendez-vous', () => {
         },
       ]),
     )
-    await user.click(screen.getByRole('button', { name: 'Confirmer le rendez-vous' }))
+    await user.click(screen.getByRole('button', { name: CONFIRM }))
 
-    expect(screen.queryByRole('heading', { name: 'Rendez-vous confirmé' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Rendez-vous enregistré sur cet appareil' })).not.toBeInTheDocument()
     expect(screen.getByText(/Étape 3 sur 5/)).toBeInTheDocument()
     expect(screen.getByRole('alert')).toBeInTheDocument()
     expect(screen.queryByRole('radio', { name: '10:30' })).not.toBeInTheDocument()
@@ -94,7 +101,7 @@ describe('prise de rendez-vous', () => {
     await first.user.click(screen.getByRole('radio', { name: '10:30' }))
     await first.user.click(next())
     await first.user.click(next())
-    await first.user.click(screen.getByRole('button', { name: 'Confirmer le rendez-vous' }))
+    await first.user.click(screen.getByRole('button', { name: CONFIRM }))
     first.unmount()
 
     const { user } = renderApp(PREFILLED)
@@ -167,7 +174,7 @@ describe('prise de rendez-vous', () => {
     expect(await axeViolations(container)).toEqual([])
     await user.click(next())
     expect(await axeViolations(container)).toEqual([])
-    await user.click(screen.getByRole('button', { name: 'Confirmer le rendez-vous' }))
+    await user.click(screen.getByRole('button', { name: CONFIRM }))
     expect(await axeViolations(container)).toEqual([])
   })
 })

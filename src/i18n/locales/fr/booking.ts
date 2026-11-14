@@ -32,7 +32,7 @@ export const booking = {
   },
   contact: {
     title: 'Vos coordonnées',
-    sample: 'Les champs sont remplis avec une identité d’exemple. Remplacez-la par la vôtre.',
+    sample: 'Les champs sont remplis avec une identité d’exemple. Gardez-la : rien n’est transmis, n’indiquez pas vos vraies coordonnées.',
   },
   review: {
     title: 'Vérifiez votre rendez-vous',
@@ -40,15 +40,15 @@ export const booking = {
     office: 'Guichet',
     when: 'Date et heure',
     contact: 'Coordonnées',
-    confirm: 'Confirmer le rendez-vous',
+    confirm: 'Enregistrer le rendez-vous',
   },
   when: '{date} à {slot}',
   done: {
-    title: 'Rendez-vous confirmé',
+    title: 'Rendez-vous enregistré sur cet appareil',
     refLabel: 'Référence du rendez-vous',
     refHint: 'Notez cette référence : elle permet de retrouver le rendez-vous.',
-    bring: 'Pièces à apporter',
-    arrive: 'Présentez-vous 10 minutes avant l’heure du rendez-vous.',
+    bring: 'Pièces généralement demandées (exemple)',
+    arrive: 'Ce rendez-vous n’existe que dans ce navigateur : aucun guichet n’en est informé. Pour une démarche réelle, adressez-vous directement à l’administration concernée.',
     track: 'Suivre ce rendez-vous',
   },
 }

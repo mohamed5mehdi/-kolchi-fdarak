@@ -39,6 +39,7 @@ export interface ReportEvent {
   unit?: string
 }
 
+/** Minimisation : aucune donnée d'identité (nom, CIN, téléphone) n'est conservée. */
 export interface Report {
   /** Référence du dossier, ex. KF-2026-004817. */
   ref: string
@@ -51,8 +52,6 @@ export interface Report {
   createdAt: string
   status: ReportStatus
   history: ReportEvent[]
-  /** Coordonnées du déclarant (facultatives pour les dossiers publics d'exemple). */
-  contact?: { fullName: string; cin: string; phone: string }
 }
 
 export interface OpeningHours {
@@ -75,6 +74,7 @@ export interface Office {
   services: OfficeService[]
 }
 
+/** Minimisation : aucune donnée d'identité (nom, CIN, téléphone) n'est conservée. */
 export interface Appointment {
   ref: string
   officeId: string
@@ -83,5 +83,4 @@ export interface Appointment {
   date: string
   slot: string
   createdAt: string
-  contact: { fullName: string; cin: string; phone: string }
 }

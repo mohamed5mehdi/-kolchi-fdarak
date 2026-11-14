@@ -25,7 +25,7 @@ export const services: Dict['services'] = {
     prepare: 'Wjjed ttalab dyali',
     book: 'Khod maw3id',
     walkIn: 'Had lmastara katdar bla maw3id, f lw9at li kaykoun fih chchebbak m7loul.',
-    indicative: 'Lmodda w sswayer kif kay9oulha chbabik; ymken ytbeddlou 3la 7sab kol dossier.',
+    indicative: 'Lmodda w sswayer ghir mital; t2akked menhom 3nd lidara lm3niya.',
     notFoundTitle: 'Had lmastara ma kaynach',
     notFoundBody: 'Had l3onwan ma kaywafe9 ta mastara f lla2i7a.',
     backToList: 'Chouf ga3 lmasatir',

@@ -53,7 +53,7 @@ export const common: Dict['common'] = {
     cinHint: 'Horof w ar9am bla espace. Matalan: BE899512',
     cinError: 'Raqm CIN khasso ykoun 1 wla 2 horof w mn mourahom 4 l 6 ar9am.',
     phone: 'Tilifoun portable',
-    phoneHint: 'Bach twselek SMS b ach wsel dossier.',
+    phoneHint: 'Format dyal numero portable maghribi. Ta SMS ma katsifet.',
     phoneError: 'Kteb raqm portable mghribi (06 wla 07), b7al 06 12 34 56 78.',
   },
   steps: {
@@ -107,7 +107,7 @@ export const common: Dict['common'] = {
   },
   emergency: {
     title: 'Kayn khatar daba?',
-    body: 'Ttabligh ma kaytsaweb ch b sor3a. Ila kan khatar 3la nnas, 3ayyet l 19 (police) wla 141 (SAMU).',
+    body: 'Had site ma kaysifet 7ta tabligh. Ila kan khatar 3la nnas, 3ayyet l 19 (police) wla 141 (SAMU).',
   },
   notFound: {
     title: 'Had sfha ma kaynach',
@@ -115,7 +115,7 @@ export const common: Dict['common'] = {
   },
   error: {
     saveFailed: 'Ma tsjjel walou: lmemoire dyal navigateur 3amra wla msdouda (navigation privée). Ma tsjjel 7ta 7aja w ma t3ta 7ta raqm.',
-    saveInvalid: 'Chi ma3loumat ma b9atch s7i7a. Raje3 kol mar7ala w 3awed sifet.',
+    saveInvalid: 'Chi ma3loumat ma b9atch s7i7a. Raje3 kol mar7ala w 3awed sejjel.',
     title: 'Wqe3 mochkil',
     body: 'Sfha ma bantch. 3awed charj-ha; dossiers dyalek ba9yin.',
     reload: '3awed charj sfha',

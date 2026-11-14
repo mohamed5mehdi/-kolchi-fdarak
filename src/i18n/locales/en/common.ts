@@ -53,7 +53,7 @@ export const common: Dict['common'] = {
     cinHint: 'Letters and digits, no spaces. Example: BE899512',
     cinError: 'The CIN must be 1 or 2 letters followed by 4 to 6 digits.',
     phone: 'Mobile phone',
-    phoneHint: 'So we can text you progress updates.',
+    phoneHint: 'Moroccan mobile number format. No text message is sent.',
     phoneError: 'Enter a Moroccan mobile number (06 or 07), for example 06 12 34 56 78.',
   },
   steps: {
@@ -107,7 +107,7 @@ export const common: Dict['common'] = {
   },
   emergency: {
     title: 'Immediate danger?',
-    body: 'Reports are not handled as emergencies. If anyone is at risk, call 19 (police) or 141 (ambulance).',
+    body: 'This site does not pass on any report. If anyone is at risk, call 19 (police) or 141 (ambulance).',
   },
   notFound: {
     title: 'Page not found',
@@ -115,7 +115,7 @@ export const common: Dict['common'] = {
   },
   error: {
     saveFailed: 'Saving failed: your browser storage is full or blocked (private browsing). Nothing was saved and no reference was issued.',
-    saveInvalid: 'Some details are no longer valid. Check each step and send again.',
+    saveInvalid: 'Some details are no longer valid. Check each step and save again.',
     title: 'Something went wrong',
     body: 'The page could not be displayed. Reload it; your saved cases are kept.',
     reload: 'Reload the page',

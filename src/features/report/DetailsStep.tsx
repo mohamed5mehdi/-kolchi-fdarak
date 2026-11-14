@@ -1,4 +1,5 @@
 import { fmt, useI18n } from '../../i18n/I18nProvider'
+import { Alert } from '../../ui/Alert'
 import type { FieldError } from '../../ui/ErrorSummary'
 import { TextArea, TextField } from '../../ui/Field'
 import { DESCRIPTION_MAX, errorFor, type Draft } from './draft'
@@ -33,6 +34,7 @@ export function DetailsStep({
 
       <fieldset className="space-y-5" aria-describedby="report-contact-hint">
         <legend className="text-lg font-semibold text-ink">{t.report.details.contactTitle}</legend>
+        <Alert>{t.report.details.sample}</Alert>
         <p id="report-contact-hint" className="text-sm text-ink-soft">
           {t.report.details.contactHint}
         </p>

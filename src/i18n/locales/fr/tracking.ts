@@ -17,7 +17,9 @@ export const tracking = {
     historyTitle: 'Historique',
     upcoming: 'À venir',
     mapLabel: 'Carte : emplacement signalé',
-    byDevice: 'Déposé depuis cet appareil par {name} · CIN {cin}',
+    byDevice: 'Enregistré sur cet appareil — n’est transmis à aucune administration. Effacé automatiquement le {date}.',
+    frozen: 'Le statut de ce dossier n’évoluera pas : il n’est transmis à aucun service.',
+    sample: 'Dossier d’exemple : l’historique présenté est illustratif, aucun service réel n’est intervenu.',
   },
   appointment: {
     heading: 'Rendez-vous {ref}',
@@ -25,12 +27,12 @@ export const tracking = {
     office: 'Guichet',
     date: 'Date',
     slot: 'Heure',
-    bring: 'Présentez-vous 10 minutes avant l’heure avec votre CIN et les pièces demandées.',
+    bring: 'Ce rendez-vous n’existe que dans ce navigateur : aucun guichet n’en est informé. Pour une démarche réelle, adressez-vous directement à l’administration concernée.',
   },
   notFound: {
     title: 'Aucun dossier ne correspond à {ref}',
     check: 'Vérifiez la saisie : une référence de signalement a la forme KF-2026-004817, une référence de rendez-vous la forme RDV-2026-000213.',
-    delay: 'Un signalement déposé à un guichet peut mettre jusqu’à 24 heures à apparaître ici.',
+    delay: 'Seuls les dossiers enregistrés dans ce navigateur, et les dossiers d’exemple, peuvent être retrouvés ici.',
   },
   device: {
     title: 'Sur cet appareil',

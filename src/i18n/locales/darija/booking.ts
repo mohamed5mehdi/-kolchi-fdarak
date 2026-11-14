@@ -34,7 +34,7 @@ export const booking: Dict['booking'] = {
   },
   contact: {
     title: 'Lma3loumat dyalek',
-    sample: 'Lkhanat 3amrin b hawiya dyal lmital. Beddelha b dyalek.',
+    sample: 'Lkhanat 3amrin b hawiya dyal lmital. Khalliha: 7ta 7aja ma katsifet, ma tkteb ch lma3loumat dyalek l7a9i9iya.',
   },
   review: {
     title: 'T2kked mn lmaw3id dyalek',
@@ -42,15 +42,15 @@ export const booking: Dict['booking'] = {
     office: 'Chchebbak',
     when: 'Nhar w sa3a',
     contact: 'Lma3loumat dyalek',
-    confirm: 'Akked lmaw3id',
+    confirm: 'Sejjel lmaw3id',
   },
   when: '{date} m3a {slot}',
   done: {
-    title: 'Lmaw3id t2akked',
+    title: 'Lmaw3id tsejjel f had lappareil',
     refLabel: 'Raqm lmaw3id',
     refHint: 'Ktbo 3ndek: bih tl9a lmaw3id dyalek.',
-    bring: 'Lwata2i9 li khassek tjib',
-    arrive: 'Ji 9bel lmaw3id b 10 d9aye9.',
+    bring: 'Lwata2i9 li kaytlebou 3adatan (mital)',
+    arrive: 'Had lmaw3id kayn ghir f had navigateur: 7ta chebbak ma 3ndo khbar bih. Ila bghiti tdir lmastara b s7, sir nichan l lidara lm3niya.',
     track: 'Tbe3 had lmaw3id',
   },
 }

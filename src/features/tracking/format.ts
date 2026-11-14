@@ -10,15 +10,6 @@ export function upcomingSteps(history: ReportEvent[]): ReportStatus[] {
   return CYCLE.slice(reached + 1)
 }
 
-export { maskCin } from '../../lib/validation'
-
-/** Salma Bennani → S. Bennani */
-export function shortName(fullName: string): string {
-  const parts = fullName.trim().split(/\s+/).filter(Boolean)
-  if (parts.length < 2) return parts[0] ?? ''
-  return `${parts[0][0]}. ${parts.slice(1).join(' ')}`
-}
-
 /** Une date « jour » (AAAA-MM-JJ) est lue à midi pour ne pas changer de jour selon le fuseau. */
 export function dayIso(day: string): string {
   return /^\d{4}-\d{2}-\d{2}$/.test(day) ? `${day}T12:00:00` : day

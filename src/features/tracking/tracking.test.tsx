@@ -7,7 +7,7 @@ import { bookAppointment } from '../../state/appointments'
 // Réservation faite avant la date du rendez-vous : le test ne dépend pas du jour où il tourne.
 const BOOKED_AT = new Date('2026-11-14T10:00:00Z')
 import { submitReport } from '../../state/reports'
-import { maskCin, shortName, upcomingSteps } from './format'
+import { upcomingSteps } from './format'
 
 function addMyReport() {
   return submitReport({
@@ -38,8 +38,10 @@ describe('suivi', () => {
     expect(items[1]).toHaveTextContent('Service de la voirie')
     expect(items[3]).toHaveTextContent('À venir')
     expect(screen.getByRole('region', { name: 'Carte : emplacement signalé' })).toBeInTheDocument()
-    // Dossier public : pas de mention de déposant.
-    expect(screen.queryByText(/Déposé depuis cet appareil/)).not.toBeInTheDocument()
+    // Dossier d'exemple : l'historique est présenté comme illustratif, sans mention d'appareil.
+    expect(screen.getByText(/Dossier d’exemple : l’historique présenté est illustratif/)).toBeInTheDocument()
+    expect(screen.queryByText(/Enregistré sur cet appareil/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/n’évoluera pas/)).not.toBeInTheDocument()
   })
 
   it('normalise une référence saisie à la main', async () => {
@@ -63,6 +65,7 @@ describe('suivi', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Suivre un dossier' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Aucun dossier ne correspond à KF-2026-999999' })).toBeInTheDocument()
     expect(screen.getByText(/une référence de signalement a la forme KF-2026-004817/)).toBeInTheDocument()
+    expect(screen.getByText(/Seuls les dossiers enregistrés dans ce navigateur/)).toBeInTheDocument()
     expect(screen.getByLabelText('Référence du dossier')).toBeInTheDocument()
   })
 
@@ -86,11 +89,28 @@ describe('suivi', () => {
     expect(screen.getByRole('link', { name: new RegExp(rdv.ref) })).toHaveAttribute('href', `/suivi/${rdv.ref}`)
   })
 
-  it('masque la CIN du déposant', () => {
-    const report = addMyReport()
+  it('dossier de cet appareil : aucune identité, statut figé, date d’effacement annoncée', () => {
+    const report = submitReport(
+      {
+        category: 'lighting',
+        district: 'anfa',
+        street: 'Boulevard d’Anfa, face au n° 12',
+        position: [33.5905, -7.6355],
+        description: 'Deux lampadaires éteints depuis lundi.',
+        contact: { fullName: 'Salma Bennani', cin: 'be 899512', phone: '0612345678' },
+      },
+      BOOKED_AT,
+    )
     renderApp(`/suivi/${report.ref}`)
-    expect(screen.getByText('Déposé depuis cet appareil par S. Bennani · CIN BE****12')).toBeInTheDocument()
-    expect(document.body).not.toHaveTextContent('BE899512')
+    expect(
+      screen.getByText(
+        'Enregistré sur cet appareil — n’est transmis à aucune administration. Effacé automatiquement le 14 déc. 2026.',
+      ),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Le statut de ce dossier n’évoluera pas : il n’est transmis à aucun service.')).toBeInTheDocument()
+    expect(screen.queryByText('À venir')).not.toBeInTheDocument()
+    expect(screen.queryByText(/Dossier d’exemple/)).not.toBeInTheDocument()
+    expect(document.body).not.toHaveTextContent(/Bennani|BE\*|899512|0612345678/)
   })
 
   it('affiche un rendez-vous', () => {
@@ -109,6 +129,7 @@ describe('suivi', () => {
     expect(screen.getByText('27, rue Ibnou Mounir, Maârif')).toBeInTheDocument()
     expect(screen.getByText(/vendredi 20 novembre 2026/)).toBeInTheDocument()
     expect(screen.getByText('09:30')).toBeInTheDocument()
+    expect(screen.getByText(/Ce rendez-vous n’existe que dans ce navigateur/)).toBeInTheDocument()
   })
 
   it.each(['/suivi', '/suivi/KF-2026-004817', '/suivi/KF-2026-999999'])('%s : aucune violation axe', async (route) => {
@@ -124,13 +145,6 @@ describe('suivi', () => {
 })
 
 describe('format', () => {
-  it('masque la CIN et abrège le prénom', () => {
-    expect(maskCin('BE899512')).toBe('BE****12')
-    expect(maskCin('A1234')).toBe('A1*34')
-    expect(shortName('Salma Bennani')).toBe('S. Bennani')
-    expect(shortName('Salma')).toBe('Salma')
-  })
-
   it('calcule les étapes à venir', () => {
     expect(upcomingSteps([{ status: 'received', at: '' }])).toEqual(['assigned', 'scheduled', 'resolved'])
     expect(

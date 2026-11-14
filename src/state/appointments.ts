@@ -1,15 +1,18 @@
 import { useSyncExternalStore } from 'react'
 import { getOffice } from '../data/offices'
 import { getProcedure } from '../data/procedures'
-import { casablancaNow, daySlots, isIsoDay, isPastSlot } from '../data/schedule'
+import { casablancaNow, daySlots, isIsoDay, isPastSlot, toIsoDay } from '../data/schedule'
 import type { Appointment } from '../data/types'
 import { createRef } from '../lib/reference'
-import { StoreError, onExternalChange, readJson, writeJson } from '../lib/storage'
-import { invalidContactFields, maskCin, normalizeCin, normalizePhone } from '../lib/validation'
+import { StoreError, isExpired, onExternalChange, readList, removeKeys, writeJson } from '../lib/storage'
+import { invalidContactFields, type Contact } from '../lib/validation'
 
 const KEY = 'appointments'
 
-export type NewAppointment = Omit<Appointment, 'ref' | 'createdAt'>
+export type NewAppointment = Omit<Appointment, 'ref' | 'createdAt'> & {
+  /** Sert uniquement à la validation du formulaire : n'est ni conservé ni renvoyé. */
+  contact: Contact
+}
 
 function isAppointment(value: unknown): value is Appointment {
   const a = value as Appointment
@@ -20,17 +23,22 @@ function isAppointment(value: unknown): value is Appointment {
     typeof a.officeId === 'string' &&
     typeof a.procedureId === 'string' &&
     typeof a.date === 'string' &&
-    typeof a.slot === 'string'
+    typeof a.slot === 'string' &&
+    typeof a.createdAt === 'string'
   )
 }
 
-function isAppointmentList(value: unknown): value is Appointment[] {
-  return Array.isArray(value)
+/** Rendez-vous dont le jour est passé (à Casablanca) ou créé il y a plus de RETENTION_DAYS jours. */
+function isOver(a: Appointment, now: Date): boolean {
+  return a.date < toIsoDay(casablancaNow(now)) || isExpired(a.createdAt, now)
 }
 
-/** Lit le stockage (source de vérité partagée entre onglets) en écartant les entrées invalides. */
-function load(): Appointment[] {
-  return readJson<Appointment[]>(KEY, [], isAppointmentList).filter(isAppointment)
+/**
+ * Lit le stockage (source de vérité partagée entre onglets) en écartant les entrées invalides
+ * et les rendez-vous terminés. `now` est injectable pour les tests.
+ */
+function load(now = new Date()): Appointment[] {
+  return readList(KEY, isAppointment, (a) => isOver(a, now))
 }
 
 let items: Appointment[] = load()
@@ -92,7 +100,7 @@ export function bookAppointment(input: NewAppointment, now = new Date()): Appoin
   if (bad.length > 0) throw new StoreError('invalid', `Rendez-vous refusé : ${bad.join(', ')}`)
 
   // Relecture juste avant l'écriture : la vérification porte sur l'état réel, pas sur la copie de cet onglet.
-  const current = load()
+  const current = load(now)
   if (taken(current, input.officeId, input.date, input.slot)) {
     publish(current)
     throw new StoreError('conflict', 'Créneau déjà réservé')
@@ -102,12 +110,7 @@ export function bookAppointment(input: NewAppointment, now = new Date()): Appoin
     procedureId: input.procedureId,
     date: input.date,
     slot: input.slot,
-    contact: {
-      fullName: input.contact.fullName.trim(),
-      // Minimisation : seule la CIN masquée est conservée dans le navigateur.
-      cin: maskCin(normalizeCin(input.contact.cin)),
-      phone: normalizePhone(input.contact.phone),
-    },
+    // Minimisation : nom, CIN et téléphone servent à la validation et ne sont jamais conservés.
     ref: createRef('RDV', current.map((a) => a.ref), now),
     createdAt: now.toISOString(),
   }
@@ -121,8 +124,12 @@ export function useAppointments(): Appointment[] {
   return useSyncExternalStore(subscribe, allAppointments, allAppointments)
 }
 
-/** Efface les rendez-vous de ce navigateur (page À propos, tests). */
-export function resetAppointments() {
-  writeJson(KEY, [])
-  publish([])
+/**
+ * Efface les rendez-vous de ce navigateur (page À propos, tests).
+ * Renvoie false si la suppression n'a pas pu être vérifiée ; la liste affichée reflète alors ce qui reste stocké.
+ */
+export function resetAppointments(): boolean {
+  const ok = removeKeys([KEY])
+  publish(ok ? [] : load())
+  return ok
 }

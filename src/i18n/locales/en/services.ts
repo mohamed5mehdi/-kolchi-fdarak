@@ -25,7 +25,7 @@ export const services: Dict['services'] = {
     prepare: 'Prepare my application',
     book: 'Book an appointment',
     walkIn: 'No appointment needed: go to the office during opening hours.',
-    indicative: 'Processing times and fees as given by the offices; they may vary from one case to another.',
+    indicative: 'Processing times and fees are given as examples; check them with the relevant administration.',
     notFoundTitle: 'Procedure not found',
     notFoundBody: 'This address does not match any procedure in the list.',
     backToList: 'See all procedures',

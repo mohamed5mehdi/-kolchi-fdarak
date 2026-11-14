@@ -3,8 +3,10 @@ import { DISTRICTS, isInCasablanca } from '../data/districts'
 import { sampleReports } from '../data/sampleReports'
 import type { DistrictId, LatLng, Report, ReportCategory } from '../data/types'
 import { createRef } from '../lib/reference'
-import { StoreError, onExternalChange, readJson, writeJson } from '../lib/storage'
-import { invalidContactFields, maskCin, normalizeCin, normalizePhone, type Contact } from '../lib/validation'
+import { StoreError, isExpired, onExternalChange, readList, removeKeys, writeJson } from '../lib/storage'
+import { invalidContactFields, type Contact } from '../lib/validation'
+
+export { RETENTION_DAYS } from '../lib/storage'
 
 const KEY = 'reports'
 
@@ -20,6 +22,7 @@ export interface NewReport {
   street: string
   position: LatLng
   description: string
+  /** Sert uniquement à la validation du formulaire : n'est ni conservé ni renvoyé. */
   contact: Contact
 }
 
@@ -41,13 +44,12 @@ function isReport(value: unknown): value is Report {
   )
 }
 
-function isReportList(value: unknown): value is Report[] {
-  return Array.isArray(value)
-}
-
-/** Lit le stockage (source de vérité partagée entre onglets) en écartant les entrées invalides. */
-function load(): Report[] {
-  return readJson<Report[]>(KEY, [], isReportList).filter(isReport)
+/**
+ * Lit le stockage (source de vérité partagée entre onglets) en écartant les entrées invalides
+ * et celles créées il y a plus de RETENTION_DAYS jours. `now` est injectable pour les tests.
+ */
+function load(now = new Date()): Report[] {
+  return readList(KEY, isReport, (r) => isExpired(r.createdAt, now))
 }
 
 const samples = sampleReports()
@@ -108,7 +110,7 @@ export function submitReport(input: NewReport, now = new Date()): Report {
   if (bad.length > 0) throw new StoreError('invalid', `Signalement refusé : ${bad.join(', ')}`)
 
   // Relecture juste avant l'écriture : un autre onglet a pu enregistrer entre-temps.
-  const current = load()
+  const current = load(now)
   const at = now.toISOString()
   const report: Report = {
     category: input.category,
@@ -116,12 +118,7 @@ export function submitReport(input: NewReport, now = new Date()): Report {
     position: input.position,
     street: input.street.trim(),
     description: input.description.trim(),
-    // Minimisation : la CIN complète ne sert à rien une fois le dossier déposé, seule sa forme masquée est conservée.
-    contact: {
-      fullName: input.contact.fullName.trim(),
-      cin: maskCin(normalizeCin(input.contact.cin)),
-      phone: normalizePhone(input.contact.phone),
-    },
+    // Minimisation : nom, CIN et téléphone servent à la validation et ne sont jamais conservés.
     ref: createRef('KF', [...current, ...samples].map((r) => r.ref), now),
     createdAt: at,
     status: 'received',
@@ -137,8 +134,12 @@ export function useReports(): Report[] {
   return useSyncExternalStore(subscribe, allReports, allReports)
 }
 
-/** Efface les dossiers de ce navigateur (page À propos, tests). */
-export function resetReports() {
-  writeJson(KEY, [])
-  publish([])
+/**
+ * Efface les dossiers de ce navigateur (page À propos, tests).
+ * Renvoie false si la suppression n'a pas pu être vérifiée ; la liste affichée reflète alors ce qui reste stocké.
+ */
+export function resetReports(): boolean {
+  const ok = removeKeys([KEY])
+  publish(ok ? [] : load())
+  return ok
 }

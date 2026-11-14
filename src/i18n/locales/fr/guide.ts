@@ -47,7 +47,7 @@ export const guide = {
   results: {
     report: {
       title: 'Signaler un problème',
-      body: 'Nid-de-poule, lampadaire éteint, dépôt sauvage : décrivez le problème et placez-le sur la carte. Vous recevez une référence pour suivre son traitement.',
+      body: 'Nid-de-poule, lampadaire éteint, dépôt sauvage : décrivez le problème et placez-le sur la carte. Vous obtenez une référence pour retrouver le dossier sur cet appareil.',
       link: 'Faire un signalement',
     },
     offices: {

@@ -49,7 +49,7 @@ export const guide: Dict['guide'] = {
   results: {
     report: {
       title: 'Report a problem',
-      body: 'Pothole, broken street light, fly-tipping: describe the problem and place it on the map. You receive a reference to follow how it is handled.',
+      body: 'Pothole, broken street light, fly-tipping: describe the problem and place it on the map. You get a reference to find the case again on this device.',
       link: 'Make a report',
     },
     offices: {

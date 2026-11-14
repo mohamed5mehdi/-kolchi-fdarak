@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { ChevronLeft, ChevronRight, Send } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Save } from 'lucide-react'
 import type { Report } from '../../data/types'
 import { useI18n } from '../../i18n/I18nProvider'
 import { StoreError } from '../../lib/storage'
@@ -150,7 +150,7 @@ export function ReportPage() {
               <Button type="submit" id="report-submit">
                 {step === 4 ? (
                   <>
-                    <Send className="size-4" aria-hidden="true" />
+                    <Save className="size-4" aria-hidden="true" />
                     {t.report.review.submit}
                   </>
                 ) : (

@@ -2,11 +2,11 @@ import type { Dict } from '../../types'
 
 export const home: Dict['home'] = {
   title: 'A problem in your neighbourhood?',
-  lead: 'Report it in two minutes, get a case number and follow it until it is fixed.',
+  lead: 'Report it in two minutes and get a reference to find the case again on this device.',
   ctaReport: 'Report a problem',
   trackTitle: 'Track a case',
   trackLabel: 'Reference number',
-  trackHint: 'It is on your acknowledgement, for example KF-2026-004817.',
+  trackHint: 'It is shown once the report is saved, for example KF-2026-004817.',
   quickTitle: 'Other services',
   quick: {
     services: 'Find a service',
@@ -18,6 +18,6 @@ export const home: Dict['home'] = {
     offices: 'Offices and opening hours',
     officesDesc: 'Addresses, hours and services of each office.',
   },
-  recentTitle: 'Latest reports in Casablanca',
+  recentTitle: 'Sample reports in Casablanca',
   recentEmpty: 'No recent reports.',
 }

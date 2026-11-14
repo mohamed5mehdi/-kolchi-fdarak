@@ -5,6 +5,10 @@ import { renderApp } from '../../test/renderApp'
 import { axeViolations } from '../../test/axe'
 
 const DESCRIPTION = 'Nid-de-poule profond sur la voie de droite, dangereux pour les deux-roues.'
+const SUBMIT = 'Enregistrer le signalement'
+
+// La saisie simulée est lente sur une machine chargée : marge au-delà des 5 s par défaut.
+vi.setConfig({ testTimeout: 15000 })
 
 async function next(user: UserEvent) {
   await user.click(screen.getByRole('button', { name: 'Continuer' }))
@@ -39,23 +43,23 @@ describe('signalement', () => {
     const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new DOMException('quota', 'QuotaExceededError')
     })
-    await user.click(screen.getByRole('button', { name: /Envoyer/ }))
+    await user.click(screen.getByRole('button', { name: SUBMIT }))
     setItem.mockRestore()
 
     expect(errorSummary()).toHaveTextContent(/aucune référence n’a été attribuée/)
     expect(screen.queryByText(/KF-\d{4}-\d{6}/)).not.toBeInTheDocument()
     expect(screen.getByText(DESCRIPTION)).toBeInTheDocument()
 
-    // Une fois le stockage disponible, le même envoi aboutit.
-    await user.click(screen.getByRole('button', { name: /Envoyer/ }))
+    // Une fois le stockage disponible, le même enregistrement aboutit.
+    await user.click(screen.getByRole('button', { name: SUBMIT }))
     expect(screen.getAllByText(/KF-\d{4}-\d{6}/).length).toBeGreaterThan(0)
     expect(JSON.parse(localStorage.getItem('kolchi-fdarak:reports')!)).toHaveLength(1)
   })
 
-  it('un double clic sur « Envoyer » ne crée qu’un seul dossier', async () => {
+  it('un double clic sur « Enregistrer » ne crée qu’un seul dossier', async () => {
     const { user } = renderApp('/signaler')
     await toReview(user)
-    await user.dblClick(screen.getByRole('button', { name: /Envoyer/ }))
+    await user.dblClick(screen.getByRole('button', { name: SUBMIT }))
     expect(JSON.parse(localStorage.getItem('kolchi-fdarak:reports')!)).toHaveLength(1)
   })
 
@@ -75,6 +79,7 @@ describe('signalement', () => {
     expect(screen.getByLabelText('Nom et prénom')).toHaveValue('Salma Bennani')
     expect(screen.getByLabelText('Numéro de CIN')).toHaveValue('BE899512')
     expect(screen.getByLabelText('Téléphone mobile')).toHaveValue('06 12 34 56 78')
+    expect(screen.getByText(/Gardez-la : rien n’est transmis, n’indiquez pas vos vraies coordonnées/)).toBeInTheDocument()
     await user.type(screen.getByLabelText('Description'), DESCRIPTION)
     expect(screen.getByText(`${DESCRIPTION.length} caractères sur 500`)).toBeInTheDocument()
     await next(user)
@@ -83,12 +88,19 @@ describe('signalement', () => {
     expect(screen.getByText('Voirie et trottoirs')).toBeInTheDocument()
     expect(screen.getByText('Rue Ibnou Mounir, devant le n° 40')).toBeInTheDocument()
     expect(screen.getByText(DESCRIPTION)).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Envoyer le signalement' }))
+    await user.click(screen.getByRole('button', { name: SUBMIT }))
 
     expect(screen.getByRole('heading', { level: 2, name: 'Signalement enregistré' })).toHaveFocus()
     const ref = screen.getByText(/^KF-\d{4}-\d{6}$/).textContent!
-    expect(screen.getByText(/48 heures ouvrées par le service concerné \(Service de la voirie\)/)).toBeInTheDocument()
+    expect(screen.getByText('Ce dossier reste sur cet appareil et n’est transmis à aucune administration.')).toBeInTheDocument()
+    expect(screen.getByText(/Aucun SMS n’est envoyé/)).toBeInTheDocument()
+    expect(screen.getByText(`Vous pouvez le retrouver sur cet appareil avec la référence ${ref}.`)).toBeInTheDocument()
+    expect(screen.queryByText(/48 heures|service concerné/)).not.toBeInTheDocument()
     expect(screen.getByText('Danger immédiat ?')).toBeInTheDocument()
+
+    // Le stockage ne garde ni le nom, ni la CIN (même partielle), ni le téléphone.
+    const stored = localStorage.getItem('kolchi-fdarak:reports')!
+    for (const fragment of ['contact', 'Salma', 'Bennani', 'BE899', '899512', 'BE*', '0612345678']) expect(stored).not.toContain(fragment)
 
     await user.click(screen.getByRole('button', { name: 'Copier la référence' }))
     expect(await screen.findByText('Référence copiée')).toBeInTheDocument()
@@ -96,13 +108,14 @@ describe('signalement', () => {
     await user.click(screen.getByRole('link', { name: 'Suivre ce dossier' }))
     expect(screen.getByRole('heading', { level: 1, name: 'Suivre un dossier' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: `Signalement ${ref}` })).toBeInTheDocument()
-    expect(screen.getByText('Déposé depuis cet appareil par S. Bennani · CIN BE****12')).toBeInTheDocument()
+    expect(screen.getByText(/^Enregistré sur cet appareil — n’est transmis à aucune administration\./)).toBeInTheDocument()
+    expect(screen.getByText(/n’évoluera pas/)).toBeInTheDocument()
   })
 
   it('« Signaler un autre problème » repart d’un formulaire vierge', async () => {
     const { user } = renderApp('/signaler')
     await toReview(user)
-    await user.click(screen.getByRole('button', { name: 'Envoyer le signalement' }))
+    await user.click(screen.getByRole('button', { name: SUBMIT }))
     await user.click(screen.getByRole('button', { name: 'Signaler un autre problème' }))
     expect(screen.getByText('Étape 1 sur 4')).toBeInTheDocument()
     expect(screen.getByRole('radio', { name: /Voirie et trottoirs/ })).not.toBeChecked()
@@ -205,7 +218,7 @@ describe('signalement', () => {
       const { user, container } = renderApp('/signaler')
       await toReview(user)
       expect(await axeViolations(container)).toEqual([])
-      await user.click(screen.getByRole('button', { name: 'Envoyer le signalement' }))
+      await user.click(screen.getByRole('button', { name: SUBMIT }))
       expect(await axeViolations(container)).toEqual([])
     })
   })

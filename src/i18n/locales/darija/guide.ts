@@ -49,7 +49,7 @@ export const guide: Dict['guide'] = {
   results: {
     report: {
       title: 'Bellegh 3la mochkil',
-      body: '7ofra f triq, dow tafi, zbel mlo7: wsef lmochkil w 7ettou 3la lkharita. Ghadi ywselek raqm bach ttbe3 ach wqe3 fih.',
+      body: '7ofra f triq, dow tafi, zbel mlo7: wsef lmochkil w 7ettou 3la lkharita. Ghadi takhod marje3 bach tl9a dossier f had lappareil.',
       link: 'Dir tabligh',
     },
     offices: {

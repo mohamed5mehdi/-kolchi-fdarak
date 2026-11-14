@@ -1,10 +1,10 @@
 export const home = {
   title: 'Un problème dans votre quartier ?',
-  lead: 'Signalez-le en deux minutes, recevez un numéro de dossier et suivez son traitement jusqu’à la résolution.',
+  lead: 'Signalez-le en deux minutes et obtenez une référence pour retrouver le dossier sur cet appareil.',
   ctaReport: 'Signaler un problème',
   trackTitle: 'Suivre un dossier',
   trackLabel: 'Numéro de référence',
-  trackHint: 'Il figure sur votre accusé de réception, par exemple KF-2026-004817.',
+  trackHint: 'Elle s’affiche après l’enregistrement, par exemple KF-2026-004817.',
   quickTitle: 'Autres démarches',
   quick: {
     services: 'Trouver une démarche',
@@ -16,6 +16,6 @@ export const home = {
     offices: 'Guichets et horaires',
     officesDesc: 'Adresses, horaires et services de chaque guichet.',
   },
-  recentTitle: 'Derniers signalements à Casablanca',
+  recentTitle: 'Exemples de signalements à Casablanca',
   recentEmpty: 'Aucun signalement récent.',
 }

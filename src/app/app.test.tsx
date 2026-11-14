@@ -1,7 +1,9 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { screen, within } from '@testing-library/react'
 import { renderApp } from '../test/renderApp'
 import { axeViolations } from '../test/axe'
+import { allAppointments, bookAppointment } from '../state/appointments'
+import { myReports, submitReport } from '../state/reports'
 
 describe('socle', () => {
   it("l'accueil présente le signalement, le suivi et la mention d'indépendance", () => {
@@ -22,7 +24,7 @@ describe('socle', () => {
 
   it("liste les derniers signalements avec leur statut", () => {
     renderApp('/')
-    const list = screen.getByRole('heading', { name: 'Derniers signalements à Casablanca' }).parentElement!
+    const list = screen.getByRole('heading', { name: 'Exemples de signalements à Casablanca' }).parentElement!
     expect(within(list).getAllByRole('link').length).toBeGreaterThanOrEqual(5)
     expect(within(list).getByText('Intervention planifiée')).toBeInTheDocument()
   })
@@ -74,9 +76,72 @@ describe('guichets', () => {
 })
 
 describe('à propos', () => {
-  it('efface les dossiers enregistrés dans le navigateur', async () => {
+  const NOW = new Date('2026-11-14T10:00:00Z')
+
+  function addRecords() {
+    submitReport(
+      {
+        category: 'lighting',
+        district: 'anfa',
+        street: 'Boulevard d’Anfa',
+        position: [33.5905, -7.6355],
+        description: 'Deux lampadaires éteints depuis lundi.',
+        contact: { fullName: 'Salma Bennani', cin: 'BE899512', phone: '0612345678' },
+      },
+      NOW,
+    )
+    bookAppointment(
+      {
+        officeId: 'maarif',
+        procedureId: 'birth-certificate',
+        date: '2026-11-20',
+        slot: '09:30',
+        contact: { fullName: 'Salma Bennani', cin: 'BE899512', phone: '0612345678' },
+      },
+      NOW,
+    )
+  }
+
+  it('efface en deux temps : rien ne disparaît avant la confirmation', async () => {
+    addRecords()
     const { user } = renderApp('/a-propos')
+    expect(screen.getByText(/nom, la CIN et le téléphone saisis dans les formulaires ne sont jamais conservés/)).toBeInTheDocument()
+    expect(screen.getByText(/OpenStreetMap, qui voit votre adresse IP/)).toBeInTheDocument()
+
     await user.click(screen.getByRole('button', { name: 'Effacer mes dossiers et rendez-vous' }))
+    expect(screen.getByRole('button', { name: 'Confirmer la suppression' })).toHaveFocus()
+    expect(localStorage.getItem('kolchi-fdarak:reports')).not.toBeNull()
+
+    // « Annuler » ne supprime rien.
+    await user.click(screen.getByRole('button', { name: 'Annuler' }))
+    expect(screen.getByRole('button', { name: 'Effacer mes dossiers et rendez-vous' })).toHaveFocus()
+    expect(localStorage.getItem('kolchi-fdarak:reports')).not.toBeNull()
+
+    await user.click(screen.getByRole('button', { name: 'Effacer mes dossiers et rendez-vous' }))
+    await user.click(screen.getByRole('button', { name: 'Confirmer la suppression' }))
     expect(screen.getByText('Vos dossiers et rendez-vous ont été effacés de ce navigateur.')).toBeInTheDocument()
+    expect(localStorage.getItem('kolchi-fdarak:reports')).toBeNull()
+    expect(localStorage.getItem('kolchi-fdarak:appointments')).toBeNull()
+    expect(myReports()).toEqual([])
+    expect(allAppointments()).toEqual([])
+  })
+
+  it("annonce l'échec si la suppression ne peut pas être vérifiée", async () => {
+    addRecords()
+    const { user } = renderApp('/a-propos')
+    const removeItem = vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+      throw new DOMException('bloqué', 'SecurityError')
+    })
+    await user.click(screen.getByRole('button', { name: 'Effacer mes dossiers et rendez-vous' }))
+    await user.click(screen.getByRole('button', { name: 'Confirmer la suppression' }))
+    removeItem.mockRestore()
+    expect(screen.getByText(/L’effacement n’a pas pu être vérifié/)).toBeInTheDocument()
+    expect(screen.queryByText('Vos dossiers et rendez-vous ont été effacés de ce navigateur.')).not.toBeInTheDocument()
+  })
+
+  it('aucune violation axe pendant la confirmation', async () => {
+    const { user, container } = renderApp('/a-propos')
+    await user.click(screen.getByRole('button', { name: 'Effacer mes dossiers et rendez-vous' }))
+    expect(await axeViolations(container)).toEqual([])
   })
 })

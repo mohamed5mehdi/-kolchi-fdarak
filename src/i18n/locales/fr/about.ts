@@ -15,8 +15,10 @@ export const about = {
   techTitle: 'Réalisation',
   tech: 'React, TypeScript, Vite, Tailwind CSS, Leaflet et OpenStreetMap. Tests avec Vitest, Testing Library et axe-core.',
   privacyTitle: 'Vos données',
-  privacy:
-    'Aucune donnée ne quitte votre appareil. Vous pouvez tout effacer à tout moment.',
+  privacy: 'Les signalements et rendez-vous sont enregistrés uniquement dans ce navigateur. Ils sont effacés automatiquement 30 jours après leur enregistrement ; un rendez-vous l’est aussi dès que sa date est passée. Le nom, la CIN et le téléphone saisis dans les formulaires ne sont jamais conservés ; en dehors de ces dossiers, seul votre choix de langue est mémorisé. Les fonds de carte sont chargés depuis OpenStreetMap, qui voit votre adresse IP et la zone affichée. Vous pouvez tout effacer à tout moment.',
   clear: 'Effacer mes dossiers et rendez-vous',
+  confirmClear: 'Confirmer la suppression',
+  confirmPrompt: 'Les dossiers et rendez-vous enregistrés dans ce navigateur seront supprimés définitivement.',
   cleared: 'Vos dossiers et rendez-vous ont été effacés de ce navigateur.',
+  clearFailed: 'L’effacement n’a pas pu être vérifié : le stockage de ce navigateur est bloqué. Supprimez les données du site depuis les réglages du navigateur.',
 }

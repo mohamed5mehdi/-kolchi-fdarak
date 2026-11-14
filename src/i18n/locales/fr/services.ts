@@ -23,7 +23,7 @@ export const services = {
     prepare: 'Préparer ma demande',
     book: 'Prendre rendez-vous',
     walkIn: 'Cette démarche se fait sans rendez-vous, aux heures d’ouverture du guichet.',
-    indicative: 'Délais et frais indiqués par les guichets ; ils peuvent varier selon les dossiers.',
+    indicative: 'Délais et frais donnés à titre d’exemple ; vérifiez-les auprès de l’administration concernée.',
     notFoundTitle: 'Démarche introuvable',
     notFoundBody: 'Cette adresse ne correspond à aucune démarche du catalogue.',
     backToList: 'Voir toutes les démarches',

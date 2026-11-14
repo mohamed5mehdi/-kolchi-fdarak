@@ -51,7 +51,7 @@ export const common = {
     cinHint: 'Lettres et chiffres, sans espace. Exemple : BE899512',
     cinError: 'Le numéro de CIN doit comporter 1 ou 2 lettres suivies de 4 à 6 chiffres.',
     phone: 'Téléphone mobile',
-    phoneHint: 'Pour être prévenu par SMS de l’avancement.',
+    phoneHint: 'Format de mobile marocain. Aucun SMS n’est envoyé.',
     phoneError: 'Indiquez un numéro de mobile marocain (06 ou 07), par exemple 06 12 34 56 78.',
   },
   steps: {
@@ -105,7 +105,7 @@ export const common = {
   },
   emergency: {
     title: 'Danger immédiat ?',
-    body: 'Un signalement n’est pas traité en urgence. En cas de danger pour des personnes, appelez le 19 (police) ou le 141 (SAMU).',
+    body: 'Ce site ne transmet aucun signalement. En cas de danger pour des personnes, appelez le 19 (police) ou le 141 (SAMU).',
   },
   notFound: {
     title: 'Page introuvable',
@@ -113,7 +113,7 @@ export const common = {
   },
   error: {
     saveFailed: 'L’enregistrement a échoué : le stockage de votre navigateur est plein ou bloqué (navigation privée). Rien n’a été enregistré, aucune référence n’a été attribuée.',
-    saveInvalid: 'Certaines informations ne sont plus valides. Vérifiez chaque étape puis renvoyez.',
+    saveInvalid: 'Certaines informations ne sont plus valides. Vérifiez chaque étape puis enregistrez à nouveau.',
     title: 'Un problème est survenu',
     body: 'La page n’a pas pu s’afficher. Rechargez-la ; vos dossiers enregistrés sont conservés.',
     reload: 'Recharger la page',
