@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 import { AttributionControl, MapContainer, Marker, TileLayer, Tooltip, ZoomControl, useMap, useMapEvents } from 'react-leaflet'
 import { Crosshair } from 'lucide-react'
 import { CASABLANCA_BOUNDS, CASABLANCA_CENTER } from '../data/districts'

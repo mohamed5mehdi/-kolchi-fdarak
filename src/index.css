@@ -89,7 +89,8 @@ body {
   outline-offset: 1px;
 }
 
-.leaflet-container {
+/* Classe doublée : leaflet.css est chargé après ce fichier, avec la même spécificité. */
+.leaflet-container.leaflet-container {
   font-family: var(--font-sans);
   background: #e9edf1;
 }

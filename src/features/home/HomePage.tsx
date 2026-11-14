@@ -4,7 +4,7 @@ import { CalendarClock, ChevronRight, Compass, FileText, Landmark, Megaphone, Se
 import { districtName, getDistrict } from '../../data/districts'
 import { normalizeRef } from '../../lib/reference'
 import { useI18n } from '../../i18n/I18nProvider'
-import { MapView } from '../../map/MapView'
+import { MapView } from '../../map/LazyMapView'
 import { useReports } from '../../state/reports'
 import { ButtonLink } from '../../ui/Button'
 import { useDocumentTitle } from '../../ui/PageHeader'
