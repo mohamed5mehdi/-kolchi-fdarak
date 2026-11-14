@@ -79,6 +79,8 @@ export function GuidePage() {
     e.preventDefault()
     if (!selected) {
       setError(true)
+      // La question reçoit le focus : son message d'erreur (aria-describedby) est alors lu.
+      if (position.kind === 'question') document.getElementById(`guide-${position.question}`)?.focus()
       return
     }
     setAnswers([...answers, selected])

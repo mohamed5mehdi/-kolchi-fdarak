@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { CalendarClock, ChevronRight, Megaphone, Search, SearchX } from 'lucide-react'
 import { getOffice } from '../../data/offices'
@@ -66,7 +66,7 @@ function NotFoundCase({ value }: { value: string }) {
   const { t } = useI18n()
   return (
     <section aria-labelledby="case-title" className="rounded-md border-s-4 border-warning-700 bg-warning-50 p-5">
-      <h2 id="case-title" className="flex items-start gap-2 text-xl font-bold text-ink">
+      <h2 id="case-title" tabIndex={-1} className="flex items-start gap-2 text-xl font-bold text-ink focus:outline-none">
         <SearchX className="mt-1 size-5 shrink-0 text-warning-700" aria-hidden="true" />
         <span>
           <RefHeading template={t.tracking.notFound.title} value={value} />
@@ -159,6 +159,11 @@ export function TrackingPage() {
   const ref = normalizeRef(raw) ?? raw.toUpperCase()
   const report = ref ? findReport(ref) : undefined
   const appointment = ref && !report ? findAppointment(ref) : undefined
+
+  // Après une recherche, le résultat (trouvé ou non) reçoit le focus pour être annoncé (WCAG 4.1.3).
+  useEffect(() => {
+    if (ref) document.getElementById('case-title')?.focus()
+  }, [ref])
 
   return (
     <>

@@ -27,7 +27,7 @@ export function DetailsStep({
           maxLength={DESCRIPTION_MAX}
           rows={5}
         />
-        <p className="text-sm text-ink-soft" aria-live="polite">
+        <p className="text-sm text-ink-soft">
           {fmt(t.report.details.counter, { count: draft.description.length, max: DESCRIPTION_MAX })}
         </p>
       </div>

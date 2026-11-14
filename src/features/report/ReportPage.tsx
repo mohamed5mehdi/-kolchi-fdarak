@@ -29,9 +29,10 @@ export function ReportPage() {
   const moved = useRef(false)
   const sending = useRef(false)
 
+  // Si l'étape s'affiche avec des erreurs, le récapitulatif garde le focus (WCAG 3.3.1).
   useEffect(() => {
-    if (moved.current) headingRef.current?.focus()
-  }, [step, done])
+    if (moved.current && errors.length === 0) headingRef.current?.focus()
+  }, [step, done, errors])
 
   const update = (patch: Partial<Draft>) => setDraft((d) => ({ ...d, ...patch }))
 

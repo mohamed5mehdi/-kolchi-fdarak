@@ -7,6 +7,7 @@ import { useI18n } from '../../i18n/I18nProvider'
 import { MapView } from '../../map/MapView'
 import { useReports } from '../../state/reports'
 import { ButtonLink } from '../../ui/Button'
+import { useDocumentTitle } from '../../ui/PageHeader'
 import { StatusBadge } from '../../ui/StatusBadge'
 
 function TrackForm() {
@@ -52,6 +53,7 @@ function TrackForm() {
 export function HomePage() {
   const { t, rtl, date } = useI18n()
   const reports = useReports()
+  useDocumentTitle()
   const recent = [...reports].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 5)
 
   const quick = [
@@ -112,7 +114,7 @@ export function HomePage() {
                     <Link to={`/suivi/${r.ref}`} className="flex items-center gap-3 p-4 hover:bg-brand-50">
                       <span className="min-w-0 flex-1">
                         <span className="block font-semibold text-ink">{t.common.categories[r.category]}</span>
-                        <span className="block truncate text-sm text-ink-soft">
+                        <span className="block break-words text-sm text-ink-soft">
                           {districtName(getDistrict(r.district), rtl)} · {date(r.createdAt)} · <span className="ref">{r.ref}</span>
                         </span>
                       </span>

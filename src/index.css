@@ -85,12 +85,18 @@ body {
 }
 .kf-pin--active {
   background: var(--color-accent-600);
-  outline: 3px solid var(--color-accent-100);
+  outline: 3px solid var(--color-ink);
+  outline-offset: 1px;
 }
 
 .leaflet-container {
   font-family: var(--font-sans);
   background: #e9edf1;
+}
+
+/* Le conteneur de la carte coupe ce qui dépasse : l'anneau de focus est dessiné à l'intérieur. */
+.leaflet-container:focus-visible {
+  outline-offset: -3px;
 }
 
 @media print {

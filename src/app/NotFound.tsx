@@ -1,9 +1,10 @@
 import { useI18n } from '../i18n/I18nProvider'
 import { ButtonLink } from '../ui/Button'
-import { PageBody } from '../ui/PageHeader'
+import { PageBody, useDocumentTitle } from '../ui/PageHeader'
 
 export function NotFound() {
   const { t } = useI18n()
+  useDocumentTitle(t.common.notFound.title)
   return (
     <PageBody narrow>
       <h1 className="text-3xl font-bold text-ink">{t.common.notFound.title}</h1>

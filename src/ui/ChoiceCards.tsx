@@ -54,6 +54,7 @@ export function ChoiceCards<T extends string>({
                 value={c.value}
                 checked={checked}
                 onChange={() => onChange(c.value)}
+                aria-invalid={error ? true : undefined}
                 className="mt-1 size-4 accent-brand-700 focus-visible:outline-none"
               />
               {c.icon && <span className="mt-0.5 text-brand-700" aria-hidden="true">{c.icon}</span>}

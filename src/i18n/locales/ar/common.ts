@@ -102,6 +102,8 @@ export const common: Dict['common'] = {
     open: 'مفتوح',
     closed: 'مغلق',
     pickHint: 'انقر على الخريطة لوضع العلامة، أو حرّك الخريطة ثم استعمل الزر.',
+    zoomIn: 'تكبير',
+    zoomOut: 'تصغير',
     pickCenter: 'وضع العلامة في وسط الخريطة',
     placed: 'تم وضع العلامة',
   },

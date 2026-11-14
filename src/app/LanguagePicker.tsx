@@ -14,7 +14,7 @@ export function LanguagePicker() {
         id="lang"
         value={lang}
         onChange={(e) => setLang(e.target.value as Lang)}
-        className="rounded-md border border-brand-600 bg-brand-800 px-2 py-1.5 text-sm text-white"
+        className="rounded-md border border-brand-200 bg-brand-800 px-2 py-1.5 text-sm text-white"
       >
         {LANGS.map((l) => (
           <option key={l.code} value={l.code} lang={l.htmlLang}>

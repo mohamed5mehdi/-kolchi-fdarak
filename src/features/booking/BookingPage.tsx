@@ -59,8 +59,9 @@ export function BookingPage({ now }: { now?: Date }) {
       mounted.current = true
       return
     }
-    headingRef.current?.focus()
-  }, [step, done])
+    // Si l'étape s'affiche avec des erreurs (créneau pris entre-temps), le récapitulatif garde le focus.
+    if (errors.length === 0) headingRef.current?.focus()
+  }, [step, done, errors])
 
   const procedure = getProcedure(procedureId)
   const office = getOffice(officeId)

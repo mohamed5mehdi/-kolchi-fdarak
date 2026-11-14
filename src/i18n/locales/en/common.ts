@@ -102,6 +102,8 @@ export const common: Dict['common'] = {
     open: 'Open',
     closed: 'Closed',
     pickHint: 'Click the map to drop the pin, or move the map and use the button.',
+    zoomIn: 'Zoom in',
+    zoomOut: 'Zoom out',
     pickCenter: 'Drop the pin at the centre of the map',
     placed: 'Pin dropped',
   },

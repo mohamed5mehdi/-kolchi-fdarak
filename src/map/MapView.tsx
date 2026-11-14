@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import L from 'leaflet'
-import { AttributionControl, MapContainer, Marker, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet'
+import { AttributionControl, MapContainer, Marker, TileLayer, Tooltip, ZoomControl, useMap, useMapEvents } from 'react-leaflet'
 import { Crosshair } from 'lucide-react'
 import { CASABLANCA_BOUNDS, CASABLANCA_CENTER } from '../data/districts'
 import type { LatLng } from '../data/types'
@@ -49,7 +49,9 @@ function ClickToPick({ onPick }: { onPick: (p: LatLng) => void }) {
 function FlyTo({ focus, zoom }: { focus: LatLng | null | undefined; zoom: number }) {
   const map = useMap()
   useEffect(() => {
-    if (focus) map.flyTo(focus, Math.max(map.getZoom(), zoom), { duration: 0.6 })
+    // L'animation est en JavaScript : la règle CSS prefers-reduced-motion ne l'atteint pas.
+    const animate = !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    if (focus) map.flyTo(focus, Math.max(map.getZoom(), zoom), { animate, duration: 0.6 })
   }, [focus, zoom, map])
   return null
 }
@@ -92,9 +94,11 @@ export function MapView({
           maxBoundsViscosity={0.8}
           scrollWheelZoom={false}
           attributionControl={false}
+          zoomControl={false}
           className="h-full w-full"
         >
           <AttributionControl prefix={false} />
+          <ZoomControl zoomInTitle={t.common.map.zoomIn} zoomOutTitle={t.common.map.zoomOut} />
           <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} />
           <MapRef onReady={onReady} />
           <FlyTo focus={focus} zoom={zoom} />
@@ -106,13 +110,16 @@ export function MapView({
               icon={m.id === activeMarkerId ? ICONS.active : ICONS.default}
               title={m.label}
               alt={m.label}
-              keyboard
+              keyboard={!!onSelectMarker}
+              interactive={!!onSelectMarker}
               eventHandlers={onSelectMarker ? { click: () => onSelectMarker(m.id) } : undefined}
             >
               <Tooltip>{m.label}</Tooltip>
             </Marker>
           ))}
-          {picked && <Marker position={picked} icon={ICONS.accent} title={t.common.map.placed} alt={t.common.map.placed} />}
+          {picked && (
+            <Marker position={picked} icon={ICONS.accent} title={t.common.map.placed} alt={t.common.map.placed} keyboard={false} interactive={false} />
+          )}
         </MapContainer>
         {onPick && (
           <span

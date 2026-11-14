@@ -14,7 +14,7 @@ export function AppointmentCase({ appointment }: { appointment: Appointment }) {
 
   return (
     <article aria-labelledby="case-title" className="space-y-4 rounded-md border border-line bg-white p-5">
-      <h2 id="case-title" className="text-2xl font-bold text-ink">
+      <h2 id="case-title" tabIndex={-1} className="text-2xl font-bold text-ink focus:outline-none">
         <RefHeading template={t.tracking.appointment.heading} value={appointment.ref} />
       </h2>
       <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-[11rem_1fr]">

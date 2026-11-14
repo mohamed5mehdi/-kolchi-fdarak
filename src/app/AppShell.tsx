@@ -44,7 +44,8 @@ export function AppShell() {
       return
     }
     window.scrollTo?.(0, 0)
-    mainRef.current?.focus()
+    // Une page peut déjà avoir placé le focus sur son résultat (suivi) : on ne le lui reprend pas.
+    if (!mainRef.current?.contains(document.activeElement)) mainRef.current?.focus()
   }, [pathname])
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>

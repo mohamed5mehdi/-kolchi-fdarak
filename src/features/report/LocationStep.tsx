@@ -80,8 +80,15 @@ export function LocationStep({
             className="h-80 sm:h-96"
           />
         </div>
-        <p role="status" className="text-sm font-semibold text-success-700">
-          {pickedDistrict ? fmt(t.report.location.picked, { district: pickedDistrict }) : ''}
+        <p
+          role="status"
+          className={`text-sm font-semibold ${draft.position && !isInCasablanca(draft.position) ? 'text-danger-700' : 'text-success-700'}`}
+        >
+          {draft.position && !isInCasablanca(draft.position)
+            ? t.report.location.outsideError
+            : pickedDistrict
+              ? fmt(t.report.location.picked, { district: pickedDistrict })
+              : ''}
         </p>
       </div>
 

@@ -102,6 +102,8 @@ export const common: Dict['common'] = {
     open: 'M7loul',
     closed: 'Msdoud',
     pickHint: 'Cliki 3la lkharita bach t7et l3alama, wla 7errek lkharita w khdem b lbouton.',
+    zoomIn: 'Kebber',
+    zoomOut: 'Seghher',
     pickCenter: '7et l3alama f west lkharita',
     placed: "L3alama t7attat",
   },

@@ -22,7 +22,7 @@ export function ReportCase({ report }: { report: Report }) {
       {!mine && <Alert>{t.tracking.report.sample}</Alert>}
       <div className="rounded-md border border-line bg-white p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <h2 id="case-title" className="text-2xl font-bold text-ink">
+          <h2 id="case-title" tabIndex={-1} className="text-2xl font-bold text-ink focus:outline-none">
             <RefHeading template={t.tracking.report.heading} value={report.ref} />
           </h2>
           <StatusBadge status={report.status} />

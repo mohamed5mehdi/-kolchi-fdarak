@@ -12,7 +12,7 @@ interface FieldShellProps {
 }
 
 const CONTROL =
-  'block w-full rounded-md border border-line-strong bg-white px-3 py-2.5 text-base text-ink placeholder:text-ink-soft/70 aria-[invalid=true]:border-danger-700 aria-[invalid=true]:border-2'
+  'block w-full rounded-md border border-line-strong bg-white px-3 py-2.5 text-base text-ink placeholder:text-ink-soft aria-[invalid=true]:border-danger-700 aria-[invalid=true]:border-2'
 
 /** Libellé, aide et message d'erreur reliés au champ par aria-describedby. */
 function FieldShell({ id, label, hint, error, optional, children }: FieldShellProps) {

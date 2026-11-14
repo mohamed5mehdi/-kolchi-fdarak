@@ -100,6 +100,8 @@ export const common = {
     open: 'Ouvert',
     closed: 'Fermé',
     pickHint: 'Cliquez sur la carte pour placer le repère, ou déplacez la carte puis utilisez le bouton.',
+    zoomIn: 'Zoomer',
+    zoomOut: 'Dézoomer',
     pickCenter: 'Placer le repère au centre de la carte',
     placed: 'Repère placé',
   },
