@@ -1,4 +1,4 @@
-import type { OfficeService } from '../../data/types'
+import type { OfficeService } from './types'
 
 export type ProcedureId =
   | 'birth-certificate'

@@ -5,7 +5,7 @@ import { useI18n } from '../../i18n/I18nProvider'
 import { Alert } from '../../ui/Alert'
 import { ButtonLink } from '../../ui/Button'
 import { PageBody, PageHeader } from '../../ui/PageHeader'
-import { getProcedure } from './procedures'
+import { getProcedure } from '../../data/procedures'
 import { documentLabels, procedureText } from './text'
 
 /** Démarche inconnue : message et retour au catalogue. */

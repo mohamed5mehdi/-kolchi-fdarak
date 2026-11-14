@@ -8,9 +8,10 @@ const PREFILLED = '/rendez-vous?demarche=birth-certificate&guichet=maarif'
 const next = () => screen.getByRole('button', { name: 'Continuer' })
 
 beforeEach(() => {
-  // Samedi 14 novembre 2026, 10 h 05 : seule l'horloge est figée, les minuteries restent réelles.
+  // Samedi 14 novembre 2026, 10 h 05 à Casablanca (UTC+1), quel que soit le fuseau de la machine de test.
+  // Seule l'horloge est figée, les minuteries restent réelles.
   vi.useFakeTimers({ toFake: ['Date'] })
-  vi.setSystemTime(new Date(2026, 10, 14, 10, 5))
+  vi.setSystemTime(new Date('2026-11-14T09:05:00Z'))
 })
 
 afterEach(() => {
@@ -54,6 +55,36 @@ describe('prise de rendez-vous', () => {
     expect(screen.getByText(/Présentez-vous 10 minutes avant/)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Suivre ce rendez-vous' })).toHaveAttribute('href', `/suivi/${ref}`)
     expect(screen.getByRole('link', { name: "Retour à l'accueil" })).toHaveAttribute('href', '/')
+  })
+
+  it('créneau pris dans un autre onglet pendant la saisie : aucune réservation, retour au choix du créneau', async () => {
+    const { user } = renderApp(PREFILLED)
+    await user.click(next())
+    await user.click(next())
+    await user.click(screen.getByRole('radio', { name: '10:30' }))
+    await user.click(next())
+    await user.click(next())
+    localStorage.setItem(
+      'kolchi-fdarak:appointments',
+      JSON.stringify([
+        {
+          ref: 'RDV-2026-000001',
+          officeId: 'maarif',
+          procedureId: 'birth-certificate',
+          date: '2026-11-14',
+          slot: '10:30',
+          createdAt: new Date().toISOString(),
+          contact: { fullName: 'Karim Alaoui', cin: 'BK****34', phone: '0661000000' },
+        },
+      ]),
+    )
+    await user.click(screen.getByRole('button', { name: 'Confirmer le rendez-vous' }))
+
+    expect(screen.queryByRole('heading', { name: 'Rendez-vous confirmé' })).not.toBeInTheDocument()
+    expect(screen.getByText(/Étape 3 sur 5/)).toBeInTheDocument()
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+    expect(screen.queryByRole('radio', { name: '10:30' })).not.toBeInTheDocument()
+    expect(JSON.parse(localStorage.getItem('kolchi-fdarak:appointments')!)).toHaveLength(1)
   })
 
   it("le créneau réservé n'est plus proposé ensuite", async () => {

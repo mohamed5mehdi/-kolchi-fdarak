@@ -6,7 +6,7 @@ import { ar } from '../../i18n/locales/ar'
 import { darija } from '../../i18n/locales/darija'
 import { en } from '../../i18n/locales/en'
 import { fr } from '../../i18n/locales/fr'
-import { PROCEDURES, getProcedure } from './procedures'
+import { PROCEDURES, getProcedure } from '../../data/procedures'
 import { documentLabels, normalizeSearch } from './text'
 
 const status = () => screen.getByRole('status')

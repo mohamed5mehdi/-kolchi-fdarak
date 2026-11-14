@@ -12,14 +12,20 @@ export function isValidCin(value: string): boolean {
   return /^[A-Z]{1,2}\d{4,6}$/.test(normalizeCin(value))
 }
 
-/** Téléphone marocain : 0 ou +212 suivi d'un numéro en 5, 6 ou 7 et de 8 chiffres. */
-export function normalizePhone(value: string): string {
-  const digits = compact(value).replace(/^\+212|^00212/, '0')
-  return digits
+/** BE899512 → BE****12. Idempotent : une CIN déjà masquée reste identique. */
+export function maskCin(cin: string): string {
+  if (cin.length <= 4) return '*'.repeat(cin.length)
+  return `${cin.slice(0, 2)}${'*'.repeat(cin.length - 4)}${cin.slice(-2)}`
 }
 
+/** Téléphone marocain : 0 ou +212 suivi de 9 chiffres. */
+export function normalizePhone(value: string): string {
+  return compact(value).replace(/^\+212|^00212/, '0')
+}
+
+/** Mobile uniquement (06 ou 07) : le suivi est envoyé par SMS, un fixe en 05 ne peut pas le recevoir. */
 export function isValidPhone(value: string): boolean {
-  return /^0[5-7]\d{8}$/.test(normalizePhone(value))
+  return /^0[67]\d{8}$/.test(normalizePhone(value))
 }
 
 /** Affiche un numéro sous la forme 06 12 34 56 78. */
@@ -30,4 +36,23 @@ export function formatPhone(value: string): string {
 
 export function isFilled(value: string, min = 1): boolean {
   return value.trim().length >= min
+}
+
+export interface Contact {
+  fullName: string
+  cin: string
+  phone: string
+}
+
+export const NAME_MIN = 2
+export const NAME_MAX = 80
+
+/** Règles communes à tous les formulaires : renvoie les champs invalides. */
+export function invalidContactFields(c: Contact): Array<keyof Contact> {
+  const bad: Array<keyof Contact> = []
+  const name = c.fullName.trim()
+  if (name.length < NAME_MIN || name.length > NAME_MAX) bad.push('fullName')
+  if (!isValidCin(c.cin)) bad.push('cin')
+  if (!isValidPhone(c.phone)) bad.push('phone')
+  return bad
 }

@@ -80,10 +80,3 @@ export const OFFICES: Office[] = [
 export function getOffice(id: string): Office | undefined {
   return OFFICES.find((o) => o.id === id)
 }
-
-/** Indique si le guichet est ouvert à l'instant donné (heure locale du navigateur). */
-export function isOpenAt(office: Office, at: Date): boolean {
-  const day = at.getDay() === 0 ? 7 : at.getDay()
-  const hhmm = `${String(at.getHours()).padStart(2, '0')}:${String(at.getMinutes()).padStart(2, '0')}`
-  return office.hours.some((h) => h.days.includes(day) && hhmm >= h.open && hhmm < h.close)
-}

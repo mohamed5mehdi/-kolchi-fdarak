@@ -4,7 +4,9 @@ import { CircleCheck } from 'lucide-react'
 import { OFFICES, getOffice } from '../../data/offices'
 import type { Appointment } from '../../data/types'
 import { fmt, useI18n } from '../../i18n/I18nProvider'
-import { formatPhone, isFilled, isValidCin, isValidPhone } from '../../lib/validation'
+import { casablancaNow } from '../../data/schedule'
+import { StoreError } from '../../lib/storage'
+import { formatPhone, invalidContactFields } from '../../lib/validation'
 import { bookAppointment } from '../../state/appointments'
 import { Alert } from '../../ui/Alert'
 import { Button, ButtonLink } from '../../ui/Button'
@@ -13,7 +15,7 @@ import { ErrorSummary, type FieldError } from '../../ui/ErrorSummary'
 import { SelectField, TextField } from '../../ui/Field'
 import { PageBody, PageHeader } from '../../ui/PageHeader'
 import { Stepper } from '../../ui/Stepper'
-import { PROCEDURES, getProcedure } from '../services/procedures'
+import { PROCEDURES, getProcedure } from '../../data/procedures'
 import { documentLabels, procedureText } from '../services/text'
 import { availableSlots, bookableDays, dayToDate } from './slots'
 
@@ -24,11 +26,13 @@ const SAMPLE_CONTACT = { fullName: 'Salma Bennani', cin: 'BE899512', phone: '06 
 
 type Step = 1 | 2 | 3 | 4 | 5
 
-/** `now` est injectable pour des tests déterministes. */
+/** `now` (heure de Casablanca) est injectable pour des tests déterministes. */
 export function BookingPage({ now }: { now?: Date }) {
   const { t, date } = useI18n()
   const [params] = useSearchParams()
-  const [today] = useState(() => now ?? new Date())
+  // Recalculé à chaque rendu : un onglet resté ouvert ne propose pas un créneau déjà passé.
+  const today = now ?? casablancaNow()
+  const sending = useRef(false)
 
   const [procedureId, setProcedureId] = useState<string>(() => {
     const p = getProcedure(params.get('demarche'))
@@ -84,9 +88,10 @@ export function BookingPage({ now }: { now?: Date }) {
     if (step === 2 && !office) found.push({ field: 'booking-office', message: t.booking.office.error })
     if (step === 3 && (!slot || !slots.includes(slot))) found.push({ field: 'booking-slot', message: t.booking.slot.error })
     if (step === 4) {
-      if (!isFilled(contact.fullName)) found.push({ field: 'booking-name', message: t.common.form.fullNameError })
-      if (!isValidCin(contact.cin)) found.push({ field: 'booking-cin', message: t.common.form.cinError })
-      if (!isValidPhone(contact.phone)) found.push({ field: 'booking-phone', message: t.common.form.phoneError })
+      const bad = invalidContactFields(contact)
+      if (bad.includes('fullName')) found.push({ field: 'booking-name', message: t.common.form.fullNameError })
+      if (bad.includes('cin')) found.push({ field: 'booking-cin', message: t.common.form.cinError })
+      if (bad.includes('phone')) found.push({ field: 'booking-phone', message: t.common.form.phoneError })
     }
     return found
   }
@@ -105,13 +110,21 @@ export function BookingPage({ now }: { now?: Date }) {
 
   function confirm(e: FormEvent) {
     e.preventDefault()
-    if (!procedure || !office) return
+    if (sending.current || !procedure || !office || !day) return
+    sending.current = true
     try {
-      setDone(bookAppointment({ procedureId: procedure.id, officeId: office.id, date: currentDay, slot, contact }))
-    } catch {
+      // `day` est la date retenue à l'étape 3 : elle ne doit jamais être remplacée en silence par une autre.
+      setDone(bookAppointment({ procedureId: procedure.id, officeId: office.id, date: day, slot, contact }))
+    } catch (err) {
+      sending.current = false
+      setAttempt((a) => a + 1)
+      if (err instanceof StoreError && err.code === 'storage') {
+        setErrors([{ field: 'booking-submit', message: t.common.error.saveFailed }])
+        return
+      }
+      // Créneau pris entre-temps (autre onglet) ou passé pendant la saisie : on redemande un créneau.
       setSlot('')
       setStep(3)
-      setAttempt((a) => a + 1)
       setErrors([{ field: 'booking-slot', message: t.booking.slot.taken }])
     }
   }
@@ -138,7 +151,7 @@ export function BookingPage({ now }: { now?: Date }) {
 
   const actions = (primary: string) => (
     <div className="mt-8 flex flex-wrap items-center gap-3">
-      <Button type="submit">{primary}</Button>
+      <Button type="submit" id="booking-submit">{primary}</Button>
       {step > 1 && (
         <Button variant="ghost" onClick={() => goTo((step - 1) as Step)}>
           {t.common.actions.back}
@@ -267,7 +280,7 @@ export function BookingPage({ now }: { now?: Date }) {
             </>
           )}
 
-          {step === 5 && procedure && office && (
+          {step === 5 && procedure && office && day && (
             <>
               {heading(t.booking.review.title)}
               <dl className="divide-y divide-line rounded-md border border-line bg-white">
@@ -279,7 +292,7 @@ export function BookingPage({ now }: { now?: Date }) {
                   <span className="block text-sm text-ink-soft">{office.address}</span>
                 </ReviewRow>
                 <ReviewRow label={t.booking.review.when} onEdit={() => goTo(3)}>
-                  {fmt(t.booking.when, { date: longDay(currentDay), slot })}
+                  {fmt(t.booking.when, { date: longDay(day), slot })}
                 </ReviewRow>
                 <ReviewRow label={t.booking.review.contact} onEdit={() => goTo(4)}>
                   {contact.fullName}

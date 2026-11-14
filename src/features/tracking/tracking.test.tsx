@@ -3,6 +3,9 @@ import { screen, within } from '@testing-library/react'
 import { renderApp } from '../../test/renderApp'
 import { axeViolations } from '../../test/axe'
 import { bookAppointment } from '../../state/appointments'
+
+// Réservation faite avant la date du rendez-vous : le test ne dépend pas du jour où il tourne.
+const BOOKED_AT = new Date('2026-11-14T10:00:00Z')
 import { submitReport } from '../../state/reports'
 import { maskCin, shortName, upcomingSteps } from './format'
 
@@ -77,7 +80,7 @@ describe('suivi', () => {
       date: '2026-11-20',
       slot: '09:30',
       contact: { fullName: 'Salma Bennani', cin: 'BE899512', phone: '0612345678' },
-    })
+    }, BOOKED_AT)
     renderApp('/suivi')
     expect(screen.getByRole('link', { name: new RegExp(report.ref) })).toHaveAttribute('href', `/suivi/${report.ref}`)
     expect(screen.getByRole('link', { name: new RegExp(rdv.ref) })).toHaveAttribute('href', `/suivi/${rdv.ref}`)
@@ -97,7 +100,7 @@ describe('suivi', () => {
       date: '2026-11-20',
       slot: '09:30',
       contact: { fullName: 'Salma Bennani', cin: 'BE899512', phone: '0612345678' },
-    })
+    }, BOOKED_AT)
     renderApp(`/suivi/${rdv.ref}`)
     expect(screen.getByRole('heading', { level: 2, name: `Rendez-vous ${rdv.ref}` })).toBeInTheDocument()
     expect(screen.getByText('Démarche')).toBeInTheDocument()

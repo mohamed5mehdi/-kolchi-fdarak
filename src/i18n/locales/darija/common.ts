@@ -54,7 +54,7 @@ export const common: Dict['common'] = {
     cinError: 'Raqm CIN khasso ykoun 1 wla 2 horof w mn mourahom 4 l 6 ar9am.',
     phone: 'Tilifoun portable',
     phoneHint: 'Bach twselek SMS b ach wsel dossier.',
-    phoneError: 'Kteb raqm mghribi fih 10 ar9am, b7al 06 12 34 56 78.',
+    phoneError: 'Kteb raqm portable mghribi (06 wla 07), b7al 06 12 34 56 78.',
   },
   steps: {
     label: 'Lmar7ala {current} mn {total}',
@@ -114,6 +114,8 @@ export const common: Dict['common'] = {
     body: 'Had l3onwan ma kaywafe9 ta sfha. Imken ttbeddel blasto.',
   },
   error: {
+    saveFailed: 'Ma tsjjel walou: lmemoire dyal navigateur 3amra wla msdouda (navigation privée). Ma tsjjel 7ta 7aja w ma t3ta 7ta raqm.',
+    saveInvalid: 'Chi ma3loumat ma b9atch s7i7a. Raje3 kol mar7ala w 3awed sifet.',
     title: 'Wqe3 mochkil',
     body: 'Sfha ma bantch. 3awed charj-ha; dossiers dyalek ba9yin.',
     reload: '3awed charj sfha',

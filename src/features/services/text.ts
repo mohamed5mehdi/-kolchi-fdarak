@@ -1,5 +1,5 @@
 import type { Dict } from '../../i18n/types'
-import type { Procedure } from './procedures'
+import type { Procedure } from '../../data/procedures'
 
 /** Textes d'une démarche dans la langue courante. */
 export function procedureText(t: Dict, procedure: Procedure) {

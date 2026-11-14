@@ -5,7 +5,7 @@ import type { OfficeService } from '../../data/types'
 import { fmt, useI18n } from '../../i18n/I18nProvider'
 import { SelectField, TextField } from '../../ui/Field'
 import { PageBody, PageHeader } from '../../ui/PageHeader'
-import { PROCEDURES } from './procedures'
+import { PROCEDURES } from '../../data/procedures'
 import { normalizeSearch, procedureText } from './text'
 
 /** Catégories ayant au moins une démarche, dans l'ordre du catalogue. */

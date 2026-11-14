@@ -5,7 +5,7 @@ import type { Dict } from '../../i18n/types'
 import { Button, ButtonLink } from '../../ui/Button'
 import { ChoiceCards } from '../../ui/ChoiceCards'
 import { PageBody, PageHeader } from '../../ui/PageHeader'
-import { getProcedure } from '../services/procedures'
+import { getProcedure } from '../../data/procedures'
 import { procedureText } from '../services/text'
 import { PAGE_LINKS, QUESTIONS, resolve, type Outcome, type QuestionId } from './tree'
 

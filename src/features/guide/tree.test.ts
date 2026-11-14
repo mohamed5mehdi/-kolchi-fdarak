@@ -3,7 +3,7 @@ import { ar } from '../../i18n/locales/ar'
 import { darija } from '../../i18n/locales/darija'
 import { en } from '../../i18n/locales/en'
 import { fr } from '../../i18n/locales/fr'
-import { PROCEDURES, getProcedure } from '../services/procedures'
+import { PROCEDURES, getProcedure } from '../../data/procedures'
 import { QUESTIONS, allPaths, resolve, type QuestionId } from './tree'
 
 describe("arbre d'orientation", () => {

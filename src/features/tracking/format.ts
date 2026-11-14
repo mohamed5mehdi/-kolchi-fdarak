@@ -10,11 +10,7 @@ export function upcomingSteps(history: ReportEvent[]): ReportStatus[] {
   return CYCLE.slice(reached + 1)
 }
 
-/** BE899512 → BE****12 : la CIN n'est jamais affichée en clair. */
-export function maskCin(cin: string): string {
-  if (cin.length <= 4) return '*'.repeat(cin.length)
-  return `${cin.slice(0, 2)}${'*'.repeat(cin.length - 4)}${cin.slice(-2)}`
-}
+export { maskCin } from '../../lib/validation'
 
 /** Salma Bennani → S. Bennani */
 export function shortName(fullName: string): string {

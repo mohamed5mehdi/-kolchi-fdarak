@@ -7,7 +7,7 @@ import { Alert } from '../../ui/Alert'
 import { Button, ButtonLink } from '../../ui/Button'
 import { SelectField } from '../../ui/Field'
 import { PageBody, PageHeader } from '../../ui/PageHeader'
-import { getProcedure } from './procedures'
+import { getProcedure } from '../../data/procedures'
 import { UnknownProcedure } from './ServiceDetailPage'
 import { documentLabels, procedureText } from './text'
 

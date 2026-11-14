@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { screen, within } from '@testing-library/react'
 import type { UserEvent } from '@testing-library/user-event'
 import { renderApp } from '../../test/renderApp'
@@ -33,6 +33,32 @@ function errorSummary() {
 }
 
 describe('signalement', () => {
+  it('stockage plein ou bloqué : message clair, aucune référence affichée, saisie conservée', async () => {
+    const { user } = renderApp('/signaler')
+    await toReview(user)
+    const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('quota', 'QuotaExceededError')
+    })
+    await user.click(screen.getByRole('button', { name: /Envoyer/ }))
+    setItem.mockRestore()
+
+    expect(errorSummary()).toHaveTextContent(/aucune référence n’a été attribuée/)
+    expect(screen.queryByText(/KF-\d{4}-\d{6}/)).not.toBeInTheDocument()
+    expect(screen.getByText(DESCRIPTION)).toBeInTheDocument()
+
+    // Une fois le stockage disponible, le même envoi aboutit.
+    await user.click(screen.getByRole('button', { name: /Envoyer/ }))
+    expect(screen.getAllByText(/KF-\d{4}-\d{6}/).length).toBeGreaterThan(0)
+    expect(JSON.parse(localStorage.getItem('kolchi-fdarak:reports')!)).toHaveLength(1)
+  })
+
+  it('un double clic sur « Envoyer » ne crée qu’un seul dossier', async () => {
+    const { user } = renderApp('/signaler')
+    await toReview(user)
+    await user.dblClick(screen.getByRole('button', { name: /Envoyer/ }))
+    expect(JSON.parse(localStorage.getItem('kolchi-fdarak:reports')!)).toHaveLength(1)
+  })
+
   it('parcours complet jusqu’à la référence, retrouvée dans le suivi', async () => {
     const { user } = renderApp('/signaler')
     expect(screen.getByText('Étape 1 sur 4')).toBeInTheDocument()
@@ -114,7 +140,7 @@ describe('signalement', () => {
     expect(summary).toHaveFocus()
     expect(within(summary).getByText('Décrivez le problème en 15 caractères au moins.')).toBeInTheDocument()
     expect(within(summary).getByText(/Le numéro de CIN doit comporter/)).toBeInTheDocument()
-    expect(within(summary).getByText(/Indiquez un numéro marocain à 10 chiffres/)).toBeInTheDocument()
+    expect(within(summary).getByText(/Indiquez un numéro de mobile marocain/)).toBeInTheDocument()
     expect(screen.getByLabelText('Numéro de CIN')).toHaveAttribute('aria-invalid', 'true')
     expect(screen.getByText('Étape 3 sur 4')).toBeInTheDocument()
   })

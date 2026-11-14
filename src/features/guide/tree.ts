@@ -1,4 +1,4 @@
-import type { ProcedureId } from '../services/procedures'
+import type { ProcedureId } from '../../data/procedures'
 
 export type QuestionId = 'start' | 'civil' | 'civilCopy' | 'certify'
 

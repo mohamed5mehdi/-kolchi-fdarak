@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { ChevronLeft, ChevronRight, Send } from 'lucide-react'
-import type { DistrictId, LatLng, Report, ReportCategory } from '../../data/types'
+import type { Report } from '../../data/types'
 import { useI18n } from '../../i18n/I18nProvider'
+import { StoreError } from '../../lib/storage'
 import { submitReport } from '../../state/reports'
 import { Button } from '../../ui/Button'
 import { ErrorSummary, type FieldError } from '../../ui/ErrorSummary'
@@ -9,7 +10,7 @@ import { PageBody, PageHeader } from '../../ui/PageHeader'
 import { Stepper } from '../../ui/Stepper'
 import { CategoryStep } from './CategoryStep'
 import { DetailsStep } from './DetailsStep'
-import { emptyDraft, errorFor, validateStep, type Draft, type Step } from './draft'
+import { emptyDraft, errorFor, firstInvalidStep, validateStep, type Draft, type Step } from './draft'
 import { LocationStep } from './LocationStep'
 import { ReportConfirmation } from './ReportConfirmation'
 import { ReviewStep } from './ReviewStep'
@@ -26,6 +27,7 @@ export function ReportPage() {
   const headingRef = useRef<HTMLHeadingElement>(null)
   // Pas de vol de focus au chargement de la page, seulement après un changement d'étape.
   const moved = useRef(false)
+  const sending = useRef(false)
 
   useEffect(() => {
     if (moved.current) headingRef.current?.focus()
@@ -39,18 +41,44 @@ export function ReportPage() {
     setStep(next)
   }
 
+  function send() {
+    // Un double clic ne doit pas créer deux dossiers.
+    if (sending.current) return
+    // Revalidation complète : une étape a pu être modifiée puis quittée par « Retour » sans être revalidée.
+    const broken = firstInvalidStep(draft, t)
+    const { category, district, position } = draft
+    if (broken || !category || !district || !position) {
+      const target = broken ?? 1
+      moved.current = true
+      setStep(target)
+      setErrors(validateStep(target, draft, t))
+      setAttempt((a) => a + 1)
+      return
+    }
+    sending.current = true
+    try {
+      setDone(
+        submitReport({
+          category,
+          district,
+          position,
+          street: draft.street,
+          description: draft.description,
+          contact: { fullName: draft.fullName, cin: draft.cin, phone: draft.phone },
+        }),
+      )
+    } catch (err) {
+      sending.current = false
+      const storage = err instanceof StoreError && err.code === 'storage'
+      setErrors([{ field: 'report-submit', message: storage ? t.common.error.saveFailed : t.common.error.saveInvalid }])
+      setAttempt((a) => a + 1)
+    }
+  }
+
   function submit(e: FormEvent) {
     e.preventDefault()
     if (step === 4) {
-      const report = submitReport({
-        category: draft.category as ReportCategory,
-        district: draft.district as DistrictId,
-        street: draft.street,
-        position: draft.position as LatLng,
-        description: draft.description,
-        contact: { fullName: draft.fullName, cin: draft.cin, phone: draft.phone },
-      })
-      setDone(report)
+      send()
       return
     }
     const found = validateStep(step, draft, t)
@@ -77,6 +105,7 @@ export function ReportPage() {
 
   function restart() {
     setDraft(emptyDraft())
+    sending.current = false
     setEditing(false)
     setDone(null)
     goTo(1)
@@ -118,7 +147,7 @@ export function ReportPage() {
             {step === 4 && <ReviewStep draft={draft} onEdit={edit} />}
 
             <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-line pt-6">
-              <Button type="submit">
+              <Button type="submit" id="report-submit">
                 {step === 4 ? (
                   <>
                     <Send className="size-4" aria-hidden="true" />

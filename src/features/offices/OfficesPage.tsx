@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Clock, MapPin, Phone } from 'lucide-react'
-import { OFFICES, isOpenAt } from '../../data/offices'
+import { OFFICES } from '../../data/offices'
+import { casablancaNow, isOpenAt } from '../../data/schedule'
 import type { Office, OfficeService } from '../../data/types'
 import { fmt, useI18n } from '../../i18n/I18nProvider'
 import { MapView } from '../../map/MapView'
@@ -31,7 +32,7 @@ export function OfficesPage() {
   const { t } = useI18n()
   const [service, setService] = useState<OfficeService | ''>('')
   const [activeId, setActiveId] = useState<string | null>(null)
-  const now = new Date()
+  const now = casablancaNow()
 
   const list = service ? OFFICES.filter((o) => o.services.includes(service)) : OFFICES
   const active = list.find((o) => o.id === activeId) ?? null

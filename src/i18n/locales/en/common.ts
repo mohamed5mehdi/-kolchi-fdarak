@@ -54,7 +54,7 @@ export const common: Dict['common'] = {
     cinError: 'The CIN must be 1 or 2 letters followed by 4 to 6 digits.',
     phone: 'Mobile phone',
     phoneHint: 'So we can text you progress updates.',
-    phoneError: 'Enter a 10-digit Moroccan number, for example 06 12 34 56 78.',
+    phoneError: 'Enter a Moroccan mobile number (06 or 07), for example 06 12 34 56 78.',
   },
   steps: {
     label: 'Step {current} of {total}',
@@ -114,6 +114,8 @@ export const common: Dict['common'] = {
     body: 'The address you entered does not match any page. It may have moved.',
   },
   error: {
+    saveFailed: 'Saving failed: your browser storage is full or blocked (private browsing). Nothing was saved and no reference was issued.',
+    saveInvalid: 'Some details are no longer valid. Check each step and send again.',
     title: 'Something went wrong',
     body: 'The page could not be displayed. Reload it; your saved cases are kept.',
     reload: 'Reload the page',

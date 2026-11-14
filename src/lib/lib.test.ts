@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { createRef, isRef, normalizeRef } from './reference'
 import { formatPhone, isValidCin, isValidPhone, normalizeCin, normalizePhone } from './validation'
 import { isInCasablanca, nearestDistrict } from '../data/districts'
-import { OFFICES, isOpenAt } from '../data/offices'
+import { OFFICES } from '../data/offices'
+import { casablancaNow, isOpenAt } from '../data/schedule'
 
 describe('CIN', () => {
   it.each(['BE899512', 'be 899 512', 'A12345', 'BK1234'])('accepte %s', (v) => expect(isValidCin(v)).toBe(true))
@@ -11,10 +12,10 @@ describe('CIN', () => {
 })
 
 describe('téléphone', () => {
-  it.each(['0612345678', '06 12 34 56 78', '+212 6 12 34 56 78', '0522984110', '0700112233'])('accepte %s', (v) =>
+  it.each(['0612345678', '06 12 34 56 78', '+212 6 12 34 56 78', '0700112233'])('accepte %s', (v) =>
     expect(isValidPhone(v)).toBe(true),
   )
-  it.each(['061234567', '0812345678', '612345678', 'abc'])('refuse %s', (v) => expect(isValidPhone(v)).toBe(false))
+  it.each(['061234567', '0812345678', '612345678', 'abc', '0522984110'])('refuse %s (fixe compris : pas de SMS)', (v) => expect(isValidPhone(v)).toBe(false))
   it('ramène +212 au format national', () => expect(normalizePhone('+212612345678')).toBe('0612345678'))
   it('formate par paires', () => expect(formatPhone('0612345678')).toBe('06 12 34 56 78'))
 })
@@ -56,6 +57,17 @@ describe('géographie', () => {
 
   it('chaque guichet est dans son arrondissement', () => {
     for (const o of OFFICES) expect(nearestDistrict(o.position).id).toBe(o.district)
+  })
+})
+
+describe('heure de Casablanca', () => {
+  it('convertit un instant UTC en heure murale de Casablanca, quel que soit le fuseau du navigateur', () => {
+    const at = casablancaNow(new Date('2026-11-14T09:30:00Z'))
+    expect([at.getFullYear(), at.getMonth(), at.getDate(), at.getHours(), at.getMinutes()]).toEqual([2026, 10, 14, 10, 30])
+  })
+
+  it('change de jour à minuit heure de Casablanca, pas à minuit UTC', () => {
+    expect(casablancaNow(new Date('2026-11-14T23:30:00Z')).getDate()).toBe(15)
   })
 })
 

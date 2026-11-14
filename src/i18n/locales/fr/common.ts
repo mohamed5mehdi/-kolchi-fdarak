@@ -52,7 +52,7 @@ export const common = {
     cinError: 'Le numéro de CIN doit comporter 1 ou 2 lettres suivies de 4 à 6 chiffres.',
     phone: 'Téléphone mobile',
     phoneHint: 'Pour être prévenu par SMS de l’avancement.',
-    phoneError: 'Indiquez un numéro marocain à 10 chiffres, par exemple 06 12 34 56 78.',
+    phoneError: 'Indiquez un numéro de mobile marocain (06 ou 07), par exemple 06 12 34 56 78.',
   },
   steps: {
     label: 'Étape {current} sur {total}',
@@ -112,6 +112,8 @@ export const common = {
     body: "L'adresse saisie ne correspond à aucune page. Elle a peut-être été déplacée.",
   },
   error: {
+    saveFailed: 'L’enregistrement a échoué : le stockage de votre navigateur est plein ou bloqué (navigation privée). Rien n’a été enregistré, aucune référence n’a été attribuée.',
+    saveInvalid: 'Certaines informations ne sont plus valides. Vérifiez chaque étape puis renvoyez.',
     title: 'Un problème est survenu',
     body: 'La page n’a pas pu s’afficher. Rechargez-la ; vos dossiers enregistrés sont conservés.',
     reload: 'Recharger la page',
